@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>App</title>
+</head>
+
+<body>
+  <h2>New Game</h2>
+  <form action="/newGame" method="post">
+    <select name="player1" id="player1">
+      <option value="" disabled selected>Player 1</option>
+      {{#each players}}
+      <option value="{{this.id}}">{{this.name}}</option>
+      {{/each}}
+    </select>
+    &amp;
+    <select name="player2" id="player2">
+      <option value="" disabled selected>Player 2</option>
+      {{#each players}}
+      <option value="{{this.id}}">{{this.name}}</option>
+      {{/each}}
+    </select>
+    vs.
+    <select name="player3" id="player3">
+      <option value="" disabled selected>Player 3</option>
+      {{#each players}}
+      <option value="{{this.id}}">{{this.name}}</option>
+      {{/each}}
+    </select>
+    &amp;
+    <select name="player4" id="player4">
+      <option value="" disabled selected>Player 4</option>
+      {{#each players}}
+      <option value="{{this.id}}">{{this.name}}</option>
+      {{/each}}
+    </select>
+    <button type="submit">New Game</button>
+  </form>
+
+  <h2> Active Games</h2>
+  <ul>
+    {{#each activeGames}}
+    <li>
+      <a href="/game/{{this.id}}">Game {{this.id}}</a>
+    </li>
+    {{/each}}
+  </ul>
+
+  <h2>Concluded Games</h2>
+  <ul>
+    {{#each concludedGames}}
+    <li>
+      <a href="/game/{{this.id}}">Game {{this.id}}</a>
+    </li>
+    {{/each}}
+  </ul>
+</body>
+
+</html>
