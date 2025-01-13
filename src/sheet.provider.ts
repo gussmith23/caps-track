@@ -50,7 +50,7 @@ class SheetService {
     return sheet.getRows().then(rows => rows.map(row => { return { id: row.get('id'), name: row.get('name') } }));
   }
 
-  getGame(id) {
+  async getGame(id) {
     if (id === undefined) {
       throw new Error("requested game id is undefined");
     }
@@ -63,7 +63,7 @@ class SheetService {
       throw new Error("one of the requested player ids is undefined");
     }
     let sheet = this.playerSheet();
-    return sheet.getRows().then(rows => rows.filter(row => row.get('id') in ids)).then(rows => rows.map(row => { return { id: row.get('id'), name: row.get('name') } }));
+    return sheet.getRows().then(rows => rows.filter(row => ids.includes(row.get('id')))).then(rows => rows.map(row => { return { id: row.get('id'), name: row.get('name') } }));
   }
 
   async activeAndConcludedGames(): Promise<[any, any]> {
@@ -72,6 +72,33 @@ class SheetService {
       let pred = row => row.get('active');
       let convert = row => { return { id: row.get('id'), player1: row.get('player1'), player2: row.get('player2'), player3: row.get('player3'), player4: row.get('player4') } };
       return [rows.filter(pred).map(convert), rows.filter(row => !pred(row)).map(convert)];
+    });
+  }
+
+  getPointSheet() {
+    return this.sheet.sheetsById[537839588];
+  }
+
+  async addPoint(gameId, playerId, double, datetime) {
+    let pointSheet = this.getPointSheet();
+    return pointSheet.addRow({ gameId: gameId, double: double, playerId: playerId, datetime: datetime });
+  }
+
+  /// returns score in the form (player1_and_player2, player3_and_player4)
+  async getScore(gameId) {
+    let pointSheet = this.getPointSheet();
+    let game = this.getGame(gameId);
+    let pointRows = pointSheet.getRows().then(rows => rows.filter(row => row.get('gameId') == gameId));
+    return Promise.all([game, pointRows]).then(([game, pointRows]) => {
+      return pointRows.reduce((acc, row) => {
+        if ([game.player1, game.player2].includes(row.get('playerId'))) {
+          acc[0] += 1;
+        }
+        if ([game.player3, game.player4].includes(row.get('playerId'))) {
+          acc[1] += 1;
+        }
+        return acc;
+      }, [0, 0]);
     });
   }
 }
