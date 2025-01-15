@@ -11,6 +11,5 @@ async function bootstrap() {
   app.engine('.hbs', engine({ extname: '.hbs', helpers: { formatPlayer }, layoutsDir: join(__dirname, '..', 'views'), defaultLayout: '' }));
   app.setViewEngine('hbs');
   await app.listen(process.env.PORT ?? 3000);
-
 }
 bootstrap();
