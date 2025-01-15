@@ -39,6 +39,7 @@
     <button type="submit">New Game</button>
   </form>
 
+  {{#if activeGames.length}}
   <h2> Active Games</h2>
   <ul>
     {{#each activeGames}}
@@ -47,7 +48,9 @@
     </li>
     {{/each}}
   </ul>
+  {{/if}}
 
+  {{#if concludedGames.length}}
   <h2>Concluded Games</h2>
   <ul>
     {{#each concludedGames}}
@@ -56,6 +59,7 @@
     </li>
     {{/each}}
   </ul>
+  {{/if}}
 </body>
 
 </html>

@@ -1,6 +1,8 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { readFile } from 'fs/promises';
+import { Player } from './player';
+import { Game } from './game';
 
 
 export const sheetProvider = {
@@ -47,7 +49,7 @@ class SheetService {
 
   getAllPlayers(): Promise<any[]> {
     let sheet = this.playerSheet();
-    return sheet.getRows().then(rows => rows.map(row => { return { id: row.get('id'), name: row.get('name') } }));
+    return sheet.getRows().then(rows => rows.map(row => { return Player.fromRow(row) }));
   }
 
   async getGame(id) {
@@ -55,8 +57,15 @@ class SheetService {
       throw new Error("requested game id is undefined");
     }
     let sheet = this.gameSheet();
-    return sheet.getRows().then(rows => rows.find(row => row.get('id') == id)).then(row => { return { id: row.get('id'), player1: row.get('player1'), player2: row.get('player2'), player3: row.get('player3'), player4: row.get('player4'), datetime: row.get('datetime') } });
+    return sheet.getRows().then(rows => rows.find(row => row.get('id') == id)).then(row => {
+      if (typeof row === 'undefined') {
+        throw new Error(`game with id ${id} not found`);
+      } else {
+        return Game.fromRow(row)
+      }
+    });
   }
+
 
   async getPlayers(ids: any[]) {
     if (ids.includes(undefined)) {
@@ -69,9 +78,8 @@ class SheetService {
   async activeAndConcludedGames(): Promise<[any, any]> {
     let sheet = this.gameSheet();
     return sheet.getRows().then(rows => {
-      let pred = row => row.get('active');
-      let convert = row => { return { id: row.get('id'), player1: row.get('player1'), player2: row.get('player2'), player3: row.get('player3'), player4: row.get('player4') } };
-      return [rows.filter(pred).map(convert), rows.filter(row => !pred(row)).map(convert)];
+      let pred = row => typeof row.get('endedAt') === 'undefined';
+      return [rows.filter(pred).map(Game.fromRow), rows.filter(row => !pred(row)).map(Game.fromRow)];
     });
   }
 
@@ -79,9 +87,35 @@ class SheetService {
     return this.sheet.sheetsById[537839588];
   }
 
+  async isGameActive(gameId) {
+    let game = this.getGame(gameId);
+    return game.then(game => typeof game.endedAt === 'undefined');
+  }
+
+  async endGame(gameId, datetime) {
+    return this.isGameActive(gameId).then(isActive => {
+      if (!isActive) {
+        throw new Error(`Game ${gameId} already ended`);
+      }
+      else {
+        return this.gameSheet().getRows().then(rows => rows.find(row => row.get('id') == gameId)).then(row => {
+          row.set('endedAt', datetime);
+          return row.save();
+        })
+      }
+    });
+  }
+
   async addPoint(gameId, playerId, double, datetime) {
     let pointSheet = this.getPointSheet();
-    return pointSheet.addRow({ gameId: gameId, double: double, playerId: playerId, datetime: datetime });
+    return this.isGameActive(gameId).then(isActive => {
+      if (!isActive) {
+        throw new Error("Game is not active");
+      }
+      else {
+        return pointSheet.addRow({ gameId: gameId, double: double, playerId: playerId, datetime: datetime });
+      }
+    });
   }
 
   /// returns score in the form (player1_and_player2, player3_and_player4)
@@ -91,10 +125,10 @@ class SheetService {
     let pointRows = pointSheet.getRows().then(rows => rows.filter(row => row.get('gameId') == gameId));
     return Promise.all([game, pointRows]).then(([game, pointRows]) => {
       return pointRows.reduce((acc, row) => {
-        if ([game.player1, game.player2].includes(row.get('playerId'))) {
+        if ([game.player1id, game.player2id].includes(row.get('playerId'))) {
           acc[0] += 1;
         }
-        if ([game.player3, game.player4].includes(row.get('playerId'))) {
+        if ([game.player3id, game.player4id].includes(row.get('playerId'))) {
           acc[1] += 1;
         }
         return acc;

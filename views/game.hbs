@@ -3,16 +3,20 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>{{player1.name}} &amp; {{player2.name}} vs. {{player3.name}} &amp; {{player4.name}} at
+  <title>{{formatPlayer player1}} &amp; {{formatPlayer player2}} vs. {{formatPlayer player3}} &amp; {{formatPlayer
+    player4}} at
     <time>{{game.datetime}}</time>
   </title>
 </head>
 
 <body>
-  <h1>{{player1.name}} &amp; {{player2.name}} vs. {{player3.name}} &amp; {{player4.name}} at
-    <time>{{game.datetime}}</time>
+  <h1>{{formatPlayer player1}} &amp; {{formatPlayer player2}} vs. {{formatPlayer player3}} &amp; {{formatPlayer player4}}
   </h1>
-score: {{team1Score}} - {{team2Score}}
+<p>began: {{game.beganAt}}</p>
+{{#if game.endedAt}}
+<p>ended: {{game.endedAt}}</p>
+{{/if}}
+<p>score: {{team1Score}} - {{team2Score}}</p>
 
 <form action="/game/{{game.id}}/addPoint" method="post">
   <input type="hidden" name="playerId" value="{{player1.id}}">
@@ -54,6 +58,10 @@ score: {{team1Score}} - {{team2Score}}
   <input type="hidden" name="playerId" value="{{player4.id}}">
   <input type="hidden" name="double" value=1>
   <button type="submit">{{player4.name}} doubles</button>
+</form>
+
+<form action="/game/{{game.id}}/endGame" method="post">
+  <button type="submit">end game</button>
 </form>
 
 </body>
