@@ -4,12 +4,12 @@ import { readFile } from 'fs/promises';
 import { Player } from './player';
 import { Game } from './game';
 
-
 export const sheetProvider = {
   provide: 'SHEET_PROVIDER',
   useFactory: async () => {
 
     let creds = JSON.parse(await readFile(__dirname + "/../key.json", "utf8"));
+    let config = JSON.parse(await readFile(__dirname + "/../caps-track-config.json", "utf8"));
 
     // Initialize auth - see https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication
     const serviceAccountAuth = new JWT({
@@ -20,13 +20,18 @@ export const sheetProvider = {
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
-    return new SheetService(new GoogleSpreadsheet('19rXl2tC7fqCNWW45hP4MitOk0DBWzb_SDTUWP2xNTuA', serviceAccountAuth));
+    let sheet_service = new SheetService(new GoogleSpreadsheet(config['spreadsheet-id'], serviceAccountAuth));
+    await sheet_service.init();
+    return sheet_service;
   }
 }
 
 class SheetService {
   constructor(private sheet: GoogleSpreadsheet) {
-    sheet.loadInfo()
+  }
+
+  async init() {
+    await this.sheet.loadInfo();
   }
 
   private gameSheet() {
