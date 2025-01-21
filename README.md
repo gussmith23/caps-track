@@ -1,10 +1,11 @@
 # Caps Track
 
 To run Caps Track on development or production data, you need the following:
-- The ID of the Google Sheets spreadsheet being used as the database.
-  - The ID should be stored in a file called `caps-track-config.json` at the root of the project. See `caps-track-config.json.template`.
-- A Google Cloud service account with permission to edit the sheet
-- A key to the service account, stored in `key.json` at the root of the project.
+- A configuration file, stored in `config/`.
+  - By default, Caps Track will look for a config called `config.json`. If you would like to set a custom config, set the environment variable `CAPS_TRACK_CONFIG`. The value of this environment variable is taken as a filepath relative to the base of `config/`. Note: your config must be stored somewhere in `config/` or it will not be copied during build.
+- The ID of the Google Sheets spreadsheet being used as the database. This is set within the config file.
+- A Google Cloud service account with permission to edit the sheet.
+- A key to the service account, stored in a JSON file in `config/`. By default, Caps Track will look for a key called `key.json`. If you would like to use a different key, you can either 1. set the environment variable `CAPS_TRACK_KEYFILE` or 2. set the `"keyfile"` setting in the config. These settings are taken as relative to the `config/` directory.
 
 ## Structure
 

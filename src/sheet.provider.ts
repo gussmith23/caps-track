@@ -3,13 +3,14 @@ import { JWT } from 'google-auth-library';
 import { readFile } from 'fs/promises';
 import { Player } from './player';
 import { Game } from './game';
+import { getConfig } from './config';
 
 export const sheetProvider = {
   provide: 'SHEET_PROVIDER',
   useFactory: async () => {
 
-    let creds = JSON.parse(await readFile(__dirname + "/../key.json", "utf8"));
-    let config = JSON.parse(await readFile(__dirname + "/../caps-track-config.json", "utf8"));
+    let config = await getConfig();
+    let creds = JSON.parse(await readFile(__dirname + "/../config/" + config["keyfile"], "utf8"));
 
     // Initialize auth - see https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication
     const serviceAccountAuth = new JWT({

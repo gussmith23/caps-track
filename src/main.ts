@@ -4,12 +4,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { formatPlayer } from 'hbs_helpers/player_helpers';
 import { create, engine } from 'express-handlebars';
+import { getConfig } from './config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.engine('.hbs', engine({ extname: '.hbs', helpers: { formatPlayer }, defaultLayout: 'default' }));
   app.setViewEngine('hbs');
-  await app.listen(process.env.PORT ?? 3000);
+  const config = await getConfig();
+  await app.listen(config.port);
 }
 bootstrap();
