@@ -1,0 +1,5 @@
+{
+  "spreadsheet-id": "the ID of the Google Sheet spreadsheet.",
+  "port": "OPTIONAL, can delete, see default in src/config.ts: the port number on which the server will listen.",
+  "keyfile": "OPTIONAL, can delete, see default in src/config.ts: the path to the key file. your key file should be stored in config/; this value is interpreted as a path relative to the config/ directory."
+}

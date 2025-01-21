@@ -6,18 +6,13 @@
     "deleteOutDir": true,
     "assets": [
       {
-        "include": "../caps-track-config.json",
-        "outDir": "dist/caps-track-config.json",
-        "watchAssets": true
-      },
-      {
-        "include": "../key.json",
-        "outDir": "dist/key.json",
-        "watchAssets": true
-      },
-      {
         "include": "../views",
         "outDir": "dist/views",
+        "watchAssets": true
+      },
+      {
+        "include": "../config",
+        "outDir": "dist/config",
         "watchAssets": true
       }
     ]
