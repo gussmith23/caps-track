@@ -78,7 +78,16 @@ class SheetService {
       throw new Error("one of the requested player ids is undefined");
     }
     let sheet = this.playerSheet();
-    return sheet.getRows().then(rows => rows.filter(row => ids.includes(row.get('id')))).then(rows => rows.map(row => { return { id: row.get('id'), name: row.get('name') } }));
+    return sheet.getRows().then(rows => {
+      return ids.map(id => {
+        let row = rows.find(row => row.get('id') == id);
+        if (typeof row === 'undefined') {
+          throw new Error(`player with id ${id} not found`);
+        } else {
+          return Player.fromRow(row);
+        }
+      })
+    });
   }
 
   async activeAndConcludedGames(): Promise<[any, any]> {
