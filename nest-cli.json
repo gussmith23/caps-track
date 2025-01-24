@@ -14,6 +14,11 @@
         "include": "../config",
         "outDir": "dist/config",
         "watchAssets": true
+      },
+      {
+        "include": "../public",
+        "outDir": "dist/public",
+        "watchAssets": true
       }
     ]
   }

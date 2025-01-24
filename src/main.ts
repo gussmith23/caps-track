@@ -11,6 +11,7 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.engine('.hbs', engine({ extname: '.hbs', helpers: { formatPlayer }, defaultLayout: 'default' }));
   app.setViewEngine('hbs');
+  app.useStaticAssets(join(__dirname, '..', 'public'));
   const config = await getConfig();
   await app.listen(config.port);
 }
