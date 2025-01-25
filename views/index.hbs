@@ -1,35 +1,103 @@
 <div class="container">
   <h2>New Game</h2>
-  <form action="/newGame" method="post">
-    <select name="player1" id="player1">
-      <option value="" disabled selected>Player 1</option>
-      {{#each players}}
-      <option value="{{this.id}}">{{this.name}}</option>
-      {{/each}}
-    </select>
-    &amp;
-    <select name="player2" id="player2">
-      <option value="" disabled selected>Player 2</option>
-      {{#each players}}
-      <option value="{{this.id}}">{{this.name}}</option>
-      {{/each}}
-    </select>
-    vs.
-    <select name="player3" id="player3">
-      <option value="" disabled selected>Player 3</option>
-      {{#each players}}
-      <option value="{{this.id}}">{{this.name}}</option>
-      {{/each}}
-    </select>
-    &amp;
-    <select name="player4" id="player4">
-      <option value="" disabled selected>Player 4</option>
-      {{#each players}}
-      <option value="{{this.id}}">{{this.name}}</option>
-      {{/each}}
-    </select>
-    <button type="submit">New Game</button>
-  </form>
+  <div class="container">
+    <form action="/newGame" method="post">
+    <script type="text/javascript">
+      function updateGamePreview() {
+        $("#gamePreview").text(
+          $("#player2 option:selected").text() + " and " +
+          $("#player4 option:selected").text() + " vs. " +
+          $("#player3 option:selected").text() + " and " +
+          $("#player1 option:selected").text()
+        );
+      }
+    </script>
+    <div class="row">
+      <div class="col d-none d-sm-block">
+        <!--padding-->
+      </div>
+      <div class="col">
+        <select name="player2" id="player2" onchange="updateGamePreview()">
+          <option value="" disabled selected>Player</option>
+          {{#each players}}
+          <option value="{{this.id}}">{{this.name}}</option>
+          {{/each}}
+        </select>
+        </div>
+        <div class="col">
+        </div>
+        <div class="col">
+          <select name="player3" id="player3" onchange="updateGamePreview()">
+            <option value="" disabled selected>Player</option>
+            {{#each players}}
+            <option value="{{this.id}}">{{this.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="col d-none d-sm-block">
+          <!--padding-->
+        </div>
+        </div>
+        <div class="row">
+          <div class="col d-none d-sm-block">
+            <!--padding-->
+          </div>
+          <div class="col">
+            🍺
+          </div>
+          <div class="col">
+            ↔
+          </div>
+          <div class="col">
+            🍺
+          </div>
+          <div class="col d-none d-sm-block">
+            <!--padding-->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col d-none d-sm-block">
+            <!--padding-->
+          </div>
+          <div class="col">
+            <select name="player1" id="player1" onchange="updateGamePreview()">
+              <option value="" disabled selected>Player</option>
+              {{#each players}}
+              <option value="{{this.id}}">{{this.name}}</option>
+              {{/each}}
+            </select>
+        </div>
+        <div class="col">
+        </div>
+        <div class="col">
+          <select name="player4" id="player4" onchange="updateGamePreview()">
+            <option value="" disabled selected>Player</option>
+            {{#each players}}
+            <option value="{{this.id}}">{{this.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="col d-none d-sm-block">
+          <!--padding-->
+        </div>
+        </div>
+        <!-- center text-->
+        <div class="row">
+          <p id="gamePreview" class="text-center">
+            Player and Player vs. Player and Player
+          </p>
+        </div>
+        <div class="row">
+          <div class="col">
+          </div>
+          <div class="col">
+            <button type="submit">New Game</button>
+          </div>
+          <div class="col">
+          </div>
+          </div>
+        </form>
+  </div>
 
   {{#if activeGames.length}}
   <h2> Active Games</h2>
