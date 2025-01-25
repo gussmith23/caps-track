@@ -1,0 +1,12 @@
+// This is our main style file. We use it to modify the default Bootstrap
+// styles. It gets built into the main CSS file during the build process -- see
+// package.json for the build scripts.
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+// Enables dark mode on Caps Track logo
+@include color-mode(dark) {
+  #capstrack-logo {
+    filter: invert(1);
+  }
+}

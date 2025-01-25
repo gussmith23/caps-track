@@ -22,3 +22,9 @@ The components one might want to contribute to are:
 **Frontend** is also relatively easy to contribute to. The user interface of Caps Track is simply HTML files. These files are stored in the `views/` directory. These files are in an HTML templating language called Handlebars, which is quite easy to learn. These template files are instantiated on the server side and sent to the client. They have access to server-side data e.g. player and game info. These can be accessed in the template with syntax like `{{ game.player1 }}`. More data can be made available to templates by modifying the backend logic, so if there's something you're trying to do in the frontend, just ask.
 
 **Backend logic** is by far the most complex thing to contribute to. In general, the project uses NestJS, which is a nice wrapper over NodeJS. The Caps Track server is a NestJS application that runs on a server somewhere and receives requests from clients (ie you using your phone to access the app while playing caps). If you want to contribute to this portion of the code, I recommend just talking to me directly. I will try to keep the code commented and clear.
+
+## Development Notes
+
+### Custom Bootstrap 
+
+We use Bootstrap for styling. We also customize Bootstrap a bit (e.g. to make the logo change colors when you flip between dark and light themes). Customizing Bootstrap is easy and well-supported. We have our own main style file, `scss/style.scss`, which imports Bootstrap and adds our custom styles. Then, in the build scripts in `package.json`, this file is compiled into the main `style.css` file and moved into `assets/`, which is eventually copied into the `dist/` by Nest.js and imported in all of our HTML (see `default.hbs`).

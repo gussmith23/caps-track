@@ -19,6 +19,16 @@
         "include": "../public",
         "outDir": "dist/public",
         "watchAssets": true
+      },
+      {
+        "include": "../assets/style.css",
+        "outDir": "dist/public/css",
+        "watchAssets": true
+      },
+      {
+        "include": "../node_modules/bootstrap/dist/js/**/*",
+        "outDir": "dist/public/js",
+        "watchAssets": true
       }
     ]
   }
