@@ -107,6 +107,8 @@
 </head>
 
 <body>
+  {{> helpModal }}
+
   <div class="container">
     <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
       <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
@@ -194,8 +196,15 @@
       </li>
     </ul>
   </div>
-  
-  
+
+  <!-- button to toggle help modal -->
+  <div class="dropdown position-fixed bottom-0 start-0 mb-3 ms-3 bd-mode-toggle">
+    <button class="btn btn-bd-primary py-2 d-flex align-items-center" type="button" data-bs-toggle="modal"
+      data-bs-target="#helpModal">
+      ?
+    </button>
+  </div>
+
   <svg width="82" height="82" xmlns="http://www.w3.org/2000/svg">
     <symbol id="capstrack-logo" viewbox="0 0 82 82">
       <g>
@@ -225,5 +234,16 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
 
+  <!-- popup help modal on first visit -->
+  <script>
+    window.onload = function () {
+      if (localStorage.getItem('hasvisited')) {
+        return;
+      }
+      $('#helpModal').modal('show');
+      localStorage.setItem('hasvisited', 'true');
+    }
+  </script>
 </body>
+
 </html>
