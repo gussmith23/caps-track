@@ -21,14 +21,22 @@ export class AppController {
 
   @Post('game/:id/addPoint')
   async addPoint(@Res() res, @Param() params, @Body() body) {
-    await this.sheet.addPoint(params.id, body.playerId, body.double != undefined, new Date());
-    res.redirect(`/game/${params.id}`);
+    try {
+      await this.sheet.addPoint(params.id, body.playerId, body.double != undefined, new Date());
+      res.redirect(`/game/${params.id}`);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
   }
 
   @Post('game/:id/removePoint')
   async removePoint(@Res() res, @Param() params, @Body() body) {
-    await this.sheet.removePoint(params.id, body.playerId);
-    res.redirect(`/game/${params.id}`);
+    try {
+      await this.sheet.removePoint(params.id, body.playerId);
+      res.redirect(`/game/${params.id}`);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
   }
 
   @Post('game/:id/endGame')
@@ -39,11 +47,14 @@ export class AppController {
 
   @Get('game/:id')
   @Render('game')
-  async getGame(@Param() params) {
-    let game = await this.sheet.getGame(params.id);
-    let [player1, player2, player3, player4] = await this.sheet.getPlayers([game.player1id, game.player2id, game.player3id, game.player4id]);
-    let [team1Score, team2Score, player1Score, player2Score, player3Score, player4Score] = await this.sheet.getScore(params.id);
-
-    return { game: game, player1: player1, player2: player2, player3: player3, player4: player4, team1Score, team2Score, player1Score, player2Score, player3Score, player4Score };
+  async getGame(@Param() params, @Res() res) {
+    try {
+      let game = await this.sheet.getGame(params.id);
+      let [player1, player2, player3, player4] = await this.sheet.getPlayers([game.player1id, game.player2id, game.player3id, game.player4id]);
+      let [team1Score, team2Score, player1Score, player2Score, player3Score, player4Score] = await this.sheet.getScore(params.id);
+      return { game: game, player1: player1, player2: player2, player3: player3, player4: player4, team1Score, team2Score, player1Score, player2Score, player3Score, player4Score };
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
   }
 }
