@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { formatPlayer } from 'hbs_helpers/player_helpers';
+import { formatPlayer } from 'hbs_helpers/helpers';
 import { create, engine } from 'express-handlebars';
 import { getConfig } from './config';
 
