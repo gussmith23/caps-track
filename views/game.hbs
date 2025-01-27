@@ -3,14 +3,15 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>{{formatPlayer player1}} &amp; {{formatPlayer player2}} vs. {{formatPlayer player3}} &amp; {{formatPlayer
-    player4}} at
+  {{!-- Call helper with three brackets to allow it to generate html. --}}
+  <title>{{{test player1}}} &amp; {{{test player2}}} vs. {{{test player3}}} &amp; {{{test
+    player4}}} at
     <time>{{game.datetime}}</time>
   </title>
 </head>
 
 <body>
-  <h1>{{formatPlayer player1}} &amp; {{formatPlayer player2}} vs. {{formatPlayer player3}} &amp; {{formatPlayer player4}}
+  <h1>{{{test player1}}} &amp; {{{test player2}}} vs. {{{test player3}}} &amp; {{{test player4}}}
   </h1>
 <p>began: {{game.beganAt}}</p>
 {{#if game.endedAt}}
