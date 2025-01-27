@@ -136,7 +136,24 @@ class SheetService {
     });
   }
 
-  /// returns score in the form (player1_and_player2, player3_and_player4)
+  /// Removes latest point from specified player in specified game.
+  async removePoint(gameId, playerId) {
+    let pointSheet = this.getPointSheet();
+    return this.isGameActive(gameId).then(isActive => {
+      if (!isActive) {
+        throw new Error("Game is not active");
+      }
+      else {
+        return pointSheet.getRows().then(rows => {
+          let sortedRows = rows.filter(row => row.get('gameId') == gameId && row.get('playerId') == playerId).sort((a, b) => a.get('datetime') - b.get('datetime'));
+          if (sortedRows.length) {
+            sortedRows.pop().delete();
+          }
+        });
+      }
+    });
+  }
+
   async getScore(gameId) {
     let pointSheet = this.getPointSheet();
     let game = this.getGame(gameId);

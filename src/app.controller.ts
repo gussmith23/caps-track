@@ -25,6 +25,12 @@ export class AppController {
     res.redirect(`/game/${params.id}`);
   }
 
+  @Post('game/:id/removePoint')
+  async removePoint(@Res() res, @Param() params, @Body() body) {
+    await this.sheet.removePoint(params.id, body.playerId);
+    res.redirect(`/game/${params.id}`);
+  }
+
   @Post('game/:id/endGame')
   async endGame(@Res() res, @Param() params) {
     await this.sheet.endGame(params.id, new Date());
