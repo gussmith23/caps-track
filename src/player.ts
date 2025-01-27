@@ -1,7 +1,25 @@
-import { GoogleSpreadsheetRow } from "google-spreadsheet"
+import { assert } from "console";
+import { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from "google-spreadsheet"
 
 export class Player {
-  constructor(public id: number, public name: string) { };
+  constructor(public id: number, public name: string, public color: string) { };
+
+  static async checkSchema(arg0: GoogleSpreadsheetWorksheet): Promise<any> {
+    return arg0.loadHeaderRow().then(_ => {
+      let expectedHeaderValues = ['id', 'name', 'color'];
+      for (let expectedHeaderValue of expectedHeaderValues) {
+        if (!arg0.headerValues.includes(expectedHeaderValue)) {
+          throw new Error(`Player sheet missing ${expectedHeaderValue}`);
+        }
+      }
+      for (let actualHeaderValue of arg0.headerValues) {
+        if (!expectedHeaderValues.includes(actualHeaderValue)) {
+          throw new Error(`Player sheet includes unexpected header value ${actualHeaderValue}`);
+        }
+      }
+    })
+  }
+
 
   static fromRow(row: GoogleSpreadsheetRow) {
     // TODO(@gussmith23): It feels like there should be a more TypeScript-y way
@@ -13,6 +31,6 @@ export class Player {
       }
       return row.get(field);
     };
-    return new Player(errorIfUndefined('id'), errorIfUndefined('name'));
+    return new Player(errorIfUndefined('id'), errorIfUndefined('name'), row.get('color'));
   }
 };
