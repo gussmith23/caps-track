@@ -2,11 +2,11 @@ import { assert } from "console";
 import { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from "google-spreadsheet"
 
 export class Player {
-  constructor(public id: number, public name: string, public color: string) { };
+  constructor(public id: number, public name: string, public nameColor: string) { };
 
   static async checkSchema(arg0: GoogleSpreadsheetWorksheet): Promise<any> {
     return arg0.loadHeaderRow().then(_ => {
-      let expectedHeaderValues = ['id', 'name', 'color'];
+      let expectedHeaderValues = ['id', 'name', 'nameColor'];
       for (let expectedHeaderValue of expectedHeaderValues) {
         if (!arg0.headerValues.includes(expectedHeaderValue)) {
           throw new Error(`Player sheet missing field "${expectedHeaderValue}"`);
@@ -31,6 +31,6 @@ export class Player {
       }
       return row.get(field);
     };
-    return new Player(errorIfUndefined('id'), errorIfUndefined('name'), row.get('color'));
+    return new Player(errorIfUndefined('id'), errorIfUndefined('name'), row.get('nameColor'));
   }
 };
