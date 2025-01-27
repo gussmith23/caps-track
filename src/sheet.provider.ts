@@ -154,20 +154,40 @@ class SheetService {
     });
   }
 
+  /// returns score in the form 
+  /// [team 1 score (player1+player3), team 2 score (player2+player4),
+  ///  player 1 score, player 2 score, player 3 score, player 4 score]
   async getScore(gameId) {
     let pointSheet = this.getPointSheet();
     let game = this.getGame(gameId);
     let pointRows = pointSheet.getRows().then(rows => rows.filter(row => row.get('gameId') == gameId));
     return Promise.all([game, pointRows]).then(([game, pointRows]) => {
       return pointRows.reduce((acc, row) => {
-        if ([game.player1id, game.player2id].includes(row.get('playerId'))) {
-          acc[0] += 1;
+        let id = row.get('playerId');
+        if (id === undefined) {
+          throw new Error("playerId is undefined");
         }
-        if ([game.player3id, game.player4id].includes(row.get('playerId'))) {
+        if (![game.player1id, game.player2id, game.player3id, game.player4id].includes(id)) {
+          throw new Error(`playerId ${id} not in game ${gameId}`);
+        }
+        if (id === game.player1id) {
+          acc[0] += 1;
+          acc[2] += 1;
+        }
+        if (id === game.player2id) {
           acc[1] += 1;
+          acc[3] += 1;
+        }
+        if (id === game.player3id) {
+          acc[0] += 1;
+          acc[4] += 1;
+        }
+        if (id === game.player4id) {
+          acc[1] += 1;
+          acc[5] += 1;
         }
         return acc;
-      }, [0, 0]);
+      }, [0, 0, 0, 0, 0, 0]);
     });
   }
 }

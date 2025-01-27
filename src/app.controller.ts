@@ -42,8 +42,8 @@ export class AppController {
   async getGame(@Param() params) {
     let game = await this.sheet.getGame(params.id);
     let [player1, player2, player3, player4] = await this.sheet.getPlayers([game.player1id, game.player2id, game.player3id, game.player4id]);
-    let score = await this.sheet.getScore(params.id);
+    let [team1Score, team2Score, player1Score, player2Score, player3Score, player4Score] = await this.sheet.getScore(params.id);
 
-    return { game: game, player1: player1, player2: player2, player3: player3, player4: player4, team1Score: score[0], team2Score: score[1] };
+    return { game: game, player1: player1, player2: player2, player3: player3, player4: player4, team1Score, team2Score, player1Score, player2Score, player3Score, player4Score };
   }
 }
