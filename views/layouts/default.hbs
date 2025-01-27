@@ -221,7 +221,11 @@
     <main>
     </main>
     <footer class="pt-5 my-5 text-body-secondary border-top">
+      {{#if phrase}}
+      {{phrase}}
+      {{else}}
       i'm never missing again
+      {{/if}}
     </footer>
   </div>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

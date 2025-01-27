@@ -8,8 +8,8 @@ export class AppController {
   @Get()
   @Render('index')
   async getIndex() {
-    return Promise.all([this.sheet.activeAndConcludedGames(), this.sheet.getAllPlayers()]).then(([[activeGames, concludedGames], players]) => {
-      return { activeGames: activeGames, concludedGames: concludedGames, players: players };
+    return Promise.all([this.sheet.activeAndConcludedGames(), this.sheet.getAllPlayers(), this.sheet.getPhrases()]).then(([[activeGames, concludedGames], players, phrases]) => {
+      return { activeGames: activeGames, concludedGames: concludedGames, players: players, phrase: phrases[Math.floor(Math.random() * phrases.length)] };
     });
   }
 

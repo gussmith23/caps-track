@@ -190,4 +190,9 @@ class SheetService {
       }, [0, 0, 0, 0, 0, 0]);
     });
   }
+
+  async getPhrases() {
+    let sheet = this.sheet.sheetsById[1119588355];
+    return sheet.getRows().then(rows => rows.map(row => row.get('phrase')));
+  }
 }
