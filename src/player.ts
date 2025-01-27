@@ -9,12 +9,12 @@ export class Player {
       let expectedHeaderValues = ['id', 'name', 'color'];
       for (let expectedHeaderValue of expectedHeaderValues) {
         if (!arg0.headerValues.includes(expectedHeaderValue)) {
-          throw new Error(`Player sheet missing ${expectedHeaderValue}`);
+          throw new Error(`Player sheet missing field "${expectedHeaderValue}"`);
         }
       }
       for (let actualHeaderValue of arg0.headerValues) {
         if (!expectedHeaderValues.includes(actualHeaderValue)) {
-          throw new Error(`Player sheet includes unexpected header value ${actualHeaderValue}`);
+          throw new Error(`Player sheet includes unexpected field "${actualHeaderValue}"`);
         }
       }
     })
