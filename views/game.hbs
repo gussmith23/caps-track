@@ -13,57 +13,57 @@
 <body>
   <h1>{{{test player1}}} &amp; {{{test player2}}} vs. {{{test player3}}} &amp; {{{test player4}}}
   </h1>
-<p>began: {{game.beganAt}}</p>
-{{#if game.endedAt}}
-<p>ended: {{game.endedAt}}</p>
-{{/if}}
-<p>score: {{team1Score}} - {{team2Score}}</p>
+  <p>began: {{game.beganAt}}</p>
+  {{#if game.endedAt}}
+  <p>ended: {{game.endedAt}}</p>
+  {{/if}}
+  <p>score: {{team1Score}} - {{team2Score}}</p>
 
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player1.id}}">
-  <button type="submit">{{player1.name}} scores</button>
-</form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player1.id}}">
+    <button type="submit">{{player1.name}} scores</button>
+  </form>
 
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player1.id}}">
-  <input type="hidden" name="double" value=1>
-  <button type="submit">{{player1.name}} doubles</button>
-</form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player1.id}}">
+    <input type="hidden" name="double" value=1>
+    <button type="submit">{{player1.name}} doubles</button>
+  </form>
 
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player2.id}}">
-  <button type="submit">{{player2.name}} scores</button>
-</form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player2.id}}">
+    <button type="submit">{{player2.name}} scores</button>
+  </form>
 
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player2.id}}">
-  <input type="hidden" name="double" value=1>
-  <button type="submit">{{player2.name}} doubles</button>
-</form>
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player3.id}}">
-  <button type="submit">{{player3.name}} scores</button>
-</form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player2.id}}">
+    <input type="hidden" name="double" value=1>
+    <button type="submit">{{player2.name}} doubles</button>
+  </form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player3.id}}">
+    <button type="submit">{{player3.name}} scores</button>
+  </form>
 
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player3.id}}">
-  <input type="hidden" name="double" value=1>
-  <button type="submit">{{player3.name}} doubles</button>
-</form>
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player4.id}}">
-  <button type="submit">{{player4.name}} scores</button>
-</form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player3.id}}">
+    <input type="hidden" name="double" value=1>
+    <button type="submit">{{player3.name}} doubles</button>
+  </form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player4.id}}">
+    <button type="submit">{{player4.name}} scores</button>
+  </form>
 
-<form action="/game/{{game.id}}/addPoint" method="post">
-  <input type="hidden" name="playerId" value="{{player4.id}}">
-  <input type="hidden" name="double" value=1>
-  <button type="submit">{{player4.name}} doubles</button>
-</form>
+  <form action="/game/{{game.id}}/addPoint" method="post">
+    <input type="hidden" name="playerId" value="{{player4.id}}">
+    <input type="hidden" name="double" value=1>
+    <button type="submit">{{player4.name}} doubles</button>
+  </form>
 
-<form action="/game/{{game.id}}/endGame" method="post">
-  <button type="submit">end game</button>
-</form>
+  <form action="/game/{{game.id}}/endGame" method="post">
+    <button type="submit">end game</button>
+  </form>
 
 </body>
 
