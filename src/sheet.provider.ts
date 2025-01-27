@@ -35,7 +35,7 @@ class SheetService {
     await this.sheet.loadInfo();
 
     // Check schemas.
-    await Promise.all([Player.checkSchema(this.playerSheet())]);
+    await Promise.all([Player.checkSchema(this.playerSheet()), Game.checkSchema(this.gameSheet())]);
   }
 
   private gameSheet() {
