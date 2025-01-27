@@ -48,12 +48,15 @@ class SheetService {
   async newGame(player1, player2, player3, player4) {
     console.assert((new Set([player1, player2, player3, player4])).size == 4, "Players must be unique");
     let sheet = this.gameSheet();
-    let id = await sheet.getRows().then(rows => {
-      let id = rows.length;
-      sheet.addRow({ id: id, creator: 'TODO', datetime: new Date(), player1: player1, player2: player2, player3: player3, player4: player4, active: true });
-      return id;
+    return sheet.getRows().then(rows => {
+      // Using apply here because Math.max doesn't take an array. Weird that we
+      // need to pass null. Blame JavaScript.
+      let id = Math.max.apply(null, rows.map(row => Number(row.get('id')))) + 1;
+      let newGame = new Game(id, player1, player2, player3, player4, new Date());
+
+      // This promise ensures that the game is added to the sheet before the id is returned.
+      return newGame.addToSheet(sheet).then(_ => id);
     });
-    return id;
   }
 
   getAllPlayers(): Promise<any[]> {
