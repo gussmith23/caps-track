@@ -8,6 +8,7 @@ inputs:
     <p>{{{formatPlayer player}}}</p>
     <p class="text-center fs-1">{{points}}</p>
 
+    {{#unless game.endedAt}}
     <div class="float-end">
       <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
         <input type="hidden" name="playerId" value="{{player.id}}">
@@ -25,5 +26,6 @@ inputs:
         <button type="submit"><tt>-</tt></button>
       </form>
     </div>
+    {{/unless}}
   </div>
 </div>

@@ -58,8 +58,10 @@
     </div>
   </div>
 
+  {{#unless game.endedAt}}
   <form class="mt-3 float-end" action="/game/{{game.id}}/endGame" method="post">
     <button type="submit">end game</button>
   </form>
+  {{/unless}}
 
 </div>
