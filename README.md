@@ -25,6 +25,18 @@ The components one might want to contribute to are:
 
 ## Development Notes
 
+### Player Numbering
+
+I went through a few ways of numbering players, and settled on this:
+```
+(player 1) (cup) (player 2)
+             ^
+             |
+             V
+(player 4) (cup) (player 3)
+```
+This means that teams are player 1 and player 3 vs player 2 and player 4. I've already had bugs where I don't respect this numbering scheme, so please be careful.
+
 ### Custom Bootstrap 
 
 We use Bootstrap for styling. We also customize Bootstrap a bit (e.g. to make the logo change colors when you flip between dark and light themes). Customizing Bootstrap is easy and well-supported. We have our own main style file, `scss/style.scss`, which imports Bootstrap and adds our custom styles. Then, in the build scripts in `package.json`, this file is compiled into the main `style.css` file and moved into `assets/`, which is eventually copied into the `dist/` by Nest.js and imported in all of our HTML (see `default.hbs`).
