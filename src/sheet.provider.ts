@@ -198,4 +198,21 @@ class SheetService {
     let sheet = this.sheet.sheetsById[1119588355];
     return sheet.getRows().then(rows => rows.map(row => row.get('phrase')));
   }
+
+  async renameGame(gameId: number, gameName: string) {
+    let sheet = this.gameSheet();
+    sheet.getRows().then(rows => {
+      let filtered = rows.filter(row => row.get('id') === gameId);
+      if (filtered.length === 0) {
+        throw new Error(`Game with id ${gameId} not found`);
+      }
+      if (filtered.length > 1) {
+        throw new Error(`Multiple games with id ${gameId} found`);
+      }
+      let row = filtered[0];
+
+      row.set('name', gameName);
+      return row.save();
+    })
+  }
 }

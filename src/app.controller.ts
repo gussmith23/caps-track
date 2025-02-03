@@ -57,4 +57,16 @@ export class AppController {
       return res.status(400).send(error.message);
     }
   }
+
+  @Post('game/:id/renameGame')
+  async renameGame(@Res() res, @Param() params, @Body() body) {
+    try {
+      await this.sheet.renameGame(params.id, body.gameName);
+      res.redirect(`/game/${params.id}`);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  }
+
+
 }

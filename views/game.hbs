@@ -1,6 +1,32 @@
+<div class="modal" id="editNameModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Rename game</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/game/{{game.id}}/renameGame" method="post">
+          <div class="mb-3">
+            <input type="text" class="form-control" id="gameName" name="gameName">
+            <button type="submit" class="btn btn-primary mt-2">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="container">
-  <h1>{{{formatPlayer player2}}} &amp; {{{formatPlayer player4}}} vs. {{{formatPlayer player1}}} &amp; {{{formatPlayer
+  <h1>
+    {{#if game.name}}
+    {{game.name}}
+    {{else}}
+    {{{formatPlayer player2}}} &amp; {{{formatPlayer player4}}} vs. {{{formatPlayer player1}}} &amp; {{{formatPlayer
     player3}}}
+    {{/if}}
+    <button type="button" class="btn btn-light btn-sm ms-3" data-bs-toggle="modal"
+      data-bs-target="#editNameModal">✎</button>
   </h1>
   <p>began: {{game.beganAt}}</p>
   {{#if game.endedAt}}

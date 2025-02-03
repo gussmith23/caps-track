@@ -17,11 +17,11 @@ export class Game {
     }
     return sheet.addRow(data);
   }
-  constructor(public id: number, public player1id: number, public player2id: number, public player3id: number, public player4id: number, public beganAt: Date, public endedAt?: Date) { };
+  constructor(public id: number, public player1id: number, public player2id: number, public player3id: number, public player4id: number, public beganAt: Date, public endedAt?: Date, public name?: string) { };
 
   static async checkSchema(arg0: GoogleSpreadsheetWorksheet): Promise<any> {
     return arg0.loadHeaderRow().then(_ => {
-      let expectedHeaderValues = ['id', 'beganAt', 'player1', 'player2', 'player3', 'player4', 'endedAt'];
+      let expectedHeaderValues = ['id', 'beganAt', 'player1', 'player2', 'player3', 'player4', 'endedAt', 'name'];
       for (let expectedHeaderValue of expectedHeaderValues) {
         if (!arg0.headerValues.includes(expectedHeaderValue)) {
           throw new Error(`Game sheet missing field "${expectedHeaderValue}"`);
@@ -45,6 +45,6 @@ export class Game {
       }
       return row.get(field);
     };
-    return new Game(errorIfUndefined('id'), errorIfUndefined('player1'), errorIfUndefined('player2'), errorIfUndefined('player3'), errorIfUndefined('player4'), new Date(errorIfUndefined('beganAt')), row.get('endedAt') ? new Date(row.get('endedAt')) : undefined);
+    return new Game(errorIfUndefined('id'), errorIfUndefined('player1'), errorIfUndefined('player2'), errorIfUndefined('player3'), errorIfUndefined('player4'), new Date(errorIfUndefined('beganAt')), row.get('endedAt') ? new Date(row.get('endedAt')) : undefined, row.get('name'));
   }
 };
