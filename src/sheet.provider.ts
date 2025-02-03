@@ -201,7 +201,7 @@ class SheetService {
 
   async renameGame(gameId: number, gameName: string) {
     let sheet = this.gameSheet();
-    sheet.getRows().then(rows => {
+    return sheet.getRows().then(rows => {
       let filtered = rows.filter(row => row.get('id') === gameId);
       if (filtered.length === 0) {
         throw new Error(`Game with id ${gameId} not found`);
@@ -213,6 +213,6 @@ class SheetService {
 
       row.set('name', gameName);
       return row.save();
-    })
+    });
   }
 }
