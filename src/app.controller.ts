@@ -8,8 +8,17 @@ export class AppController {
   @Get()
   @Render('index')
   async getIndex() {
-    return Promise.all([this.sheet.activeAndConcludedGames(), this.sheet.getAllPlayers(), this.sheet.getPhrases()]).then(([[activeGames, concludedGames], players, phrases]) => {
-      return { activeGames: activeGames, concludedGames: concludedGames, players: players, phrase: phrases[Math.floor(Math.random() * phrases.length)] };
+    return Promise.all([this.sheet.getAllGamesMap(), this.sheet.getAllPlayersMap(), this.sheet.getPhrases()]).then(([gamesMap, playersMap, phrases]) => {
+      let activeGameIds = [];
+      let concludedGameIds = [];
+      for (let game of gamesMap.values()) {
+        if (game.endedAt) {
+          concludedGameIds.push(game.id);
+        } else {
+          activeGameIds.push(game.id);
+        }
+      }
+      return { activeGameIds: activeGameIds, concludedGameIds: concludedGameIds, playersMap: playersMap, gamesMap: gamesMap, phrase: phrases[Math.floor(Math.random() * phrases.length)] };
     });
   }
 

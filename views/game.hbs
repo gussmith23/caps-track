@@ -19,12 +19,7 @@
 
 <div class="container">
   <h1>
-    {{#if game.name}}
-    {{game.name}}
-    {{else}}
-    {{{formatPlayer player2}}} &amp; {{{formatPlayer player4}}} vs. {{{formatPlayer player1}}} &amp; {{{formatPlayer
-    player3}}}
-    {{/if}}
+    {{>gameName game=game}}
     <button type="button" class="btn btn-light btn-sm ms-3" data-bs-toggle="modal"
       data-bs-target="#editNameModal">✎</button>
   </h1>

@@ -1,4 +1,5 @@
 import { Player } from "src/player"
+import { format } from "date-fns";
 
 export function formatPlayer(player: Player) {
   let style = "";
@@ -13,4 +14,12 @@ export function formatPlayer(player: Player) {
   }
 
   return `<span style="${style}">${player.name}</span>`;
+}
+
+export function mapLookup(map: Map<any, any>, key: any) {
+  return map.get(key);
+}
+
+export function formatDate(date: Date, formatString: string) {
+  return format(date, formatString);
 }

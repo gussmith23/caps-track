@@ -26,6 +26,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "bootstrap": "^5.3.3",
+    "date-fns": "^4.1.0",
     "express-handlebars": "^8.0.1",
     "google-auth-library": "^9.15.0",
     "google-spreadsheet": "^4.1.4",

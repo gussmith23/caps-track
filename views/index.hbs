@@ -1,70 +1,83 @@
+{{!--
+inputs:
+- gamesMap: map from id to game object, accessible by getGame helper
+- activeGameIds: list of active game ids
+- concludedGameIds: list of concluded game ids
+- playersMap: map from id to player object, accessible by
+--}}
 <div class="container">
   <h2>New Game</h2>
   <div class="container text-center">
     <form action="/newGame" method="post">
-    <script type="text/javascript">
-      function updateGamePreview() {
-        $("#gamePreview").text(
-          $("#player2 option:selected").text() + " and " +
-          $("#player4 option:selected").text() + " vs. " +
-          $("#player3 option:selected").text() + " and " +
-          $("#player1 option:selected").text()
-        );
-      }
-    </script>
-    <div class="row">
-      <div class="col d-none d-sm-block">
-        <!--padding-->
-      </div>
-      <div class="col">
-        <select name="player2" id="player2" onchange="updateGamePreview()">
-          <option value="" disabled selected>Player</option>
-          {{#each players}}
-          <option value="{{this.id}}">{{this.name}}</option>
-          {{/each}}
-        </select>
+      <script type="text/javascript">
+        on updateGamePreview() {
+                iew").text(
+                        :selected").text() + " and " +
+            $("#pl            ted").text() + " vs. " +
+              $("#player3             text() + " and " +
+            $("#player1 option            
+              );
+          }
+        </script>
+        <div class="row">
+          <div class="col d-none d-sm-block">
+            <!--padding-->
+          </div>
+          <div class="col">
+            <select name="player2" id="player2" onchange="updateGamePreview()">
+              <option value="" disabled selected>Player</option>
+            {{#each playersMap}}
+            {{#with (lookup this 1)}}
+            <option value="{{this.id}}">{{this.name}}</option>
+            {{/with}}
+            {{/each}}
+            </select>
         </div>
         <div class="col">
         </div>
         <div class="col">
           <select name="player3" id="player3" onchange="updateGamePreview()">
             <option value="" disabled selected>Player</option>
-            {{#each players}}
+            {{#each playersMap}}
+            {{#with (lookup this 1)}}
             <option value="{{this.id}}">{{this.name}}</option>
+            {{/with}}
             {{/each}}
           </select>
         </div>
         <div class="col d-none d-sm-block">
           <!--padding-->
         </div>
+      </div>
+      <div class="row">
+        <div class="col d-none d-sm-block">
+          <!--padding-->
         </div>
-        <div class="row">
-          <div class="col d-none d-sm-block">
-            <!--padding-->
-          </div>
-          <div class="col fs-1">
-            🍺
-          </div>
-          <div class="col fs-1">
-            ↔
-          </div>
-          <div class="col fs-1">
-            🍺
-          </div>
-          <div class="col d-none d-sm-block">
-            <!--padding-->
-          </div>
+        <div class="col fs-1">
+          🍺
         </div>
-        <div class="row">
-          <div class="col d-none d-sm-block">
-            <!--padding-->
-          </div>
-          <div class="col">
-            <select name="player1" id="player1" onchange="updateGamePreview()">
-              <option value="" disabled selected>Player</option>
-              {{#each players}}
-              <option value="{{this.id}}">{{this.name}}</option>
-              {{/each}}
+        <div class="col fs-1">
+          ↔
+        </div>
+        <div class="col fs-1">
+          🍺
+        </div>
+        <div class="col d-none d-sm-block">
+          <!--padding-->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col d-none d-sm-block">
+          <!--padding-->
+        </div>
+        <div class="col">
+          <select name="player1" id="player1" onchange="updateGamePreview()">
+            <option value="" disabled selected>Player</option>
+            {{#each playersMap}}
+            {{#with (lookup this 1)}}
+            <option value="{{this.id}}">{{this.name}}</option>
+            {{/with}}
+            {{/each}}
             </select>
         </div>
         <div class="col">
@@ -72,47 +85,65 @@
         <div class="col">
           <select name="player4" id="player4" onchange="updateGamePreview()">
             <option value="" disabled selected>Player</option>
-            {{#each players}}
+            {{#each playersMap}}
+            {{#with (lookup this 1)}}
             <option value="{{this.id}}">{{this.name}}</option>
+            {{/with}}
             {{/each}}
           </select>
         </div>
         <div class="col d-none d-sm-block">
           <!--padding-->
         </div>
+      </div>
+      <!-- center text-->
+      <div class="row">
+        <p id="gamePreview" class="text-center">
+          Player and Player vs. Player and Player
+        </p>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button type="submit">New Game</button>
         </div>
-        <!-- center text-->
-        <div class="row">
-          <p id="gamePreview" class="text-center">
-            Player and Player vs. Player and Player
-          </p>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button type="submit">New Game</button>
-          </div>
-          </div>
-        </form>
+      </div>
+      </form>
   </div>
 
-  {{#if activeGames.length}}
-  <h2> Active Games</h2>
+  {{#if activeGameIds.length}}
+  <h2>Active Games</h2>
   <ul>
-    {{#each activeGames}}
+    {{#each activeGameIds}}
+    {{#with (mapLookup ../gamesMap this)}}
     <li>
-      <a href="/game/{{this.id}}">Game {{this.id}}</a>
+      <a href="/game/{{this.id}}">{{>gameName game=this
+        player1=(mapLookup ../../playersMap this.player1id)
+        player2=(mapLookup ../../playersMap this.player2id)
+        player3=(mapLookup ../../playersMap this.player3id)
+        player4=(mapLookup ../../playersMap this.player4id)
+        displayDate=false
+        }}</a>
     </li>
+    {{/with}}
     {{/each}}
   </ul>
   {{/if}}
 
-  {{#if concludedGames.length}}
+  {{#if concludedGameIds.length}}
   <h2>Concluded Games</h2>
   <ul>
-    {{#each concludedGames}}
+    {{#each concludedGameIds}}
+    {{#with (mapLookup ../gamesMap this)}}
     <li>
-      <a href="/game/{{this.id}}">Game {{this.id}}</a>
+      <a href="/game/{{this.id}}">{{>gameName game=this
+        player1=(mapLookup ../../playersMap this.player1id)
+        player2=(mapLookup ../../playersMap this.player2id)
+        player3=(mapLookup ../../playersMap this.player3id)
+        player4=(mapLookup ../../playersMap this.player4id)
+        displayDate=true
+        }}</a>
     </li>
+    {{/with}}
     {{/each}}
   </ul>
   {{/if}}

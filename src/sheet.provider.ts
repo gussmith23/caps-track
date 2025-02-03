@@ -64,6 +64,16 @@ class SheetService {
     return sheet.getRows().then(rows => rows.map(row => { return Player.fromRow(row) }));
   }
 
+  async getAllPlayersMap(): Promise<Map<number, Player>> {
+    let sheet = this.playerSheet();
+    return sheet.getRows().then(rows => new Map(rows.map(row => { let player = Player.fromRow(row); return [player.id, player]; })));
+  }
+
+  async getAllGamesMap(): Promise<Map<number, Game>> {
+    let sheet = this.gameSheet();
+    return sheet.getRows().then(rows => new Map(rows.map(row => { let game = Game.fromRow(row); return [game.id, game]; })));
+  }
+
   async getGame(id) {
     if (id === undefined) {
       throw new Error("requested game id is undefined");
