@@ -225,4 +225,42 @@ class SheetService {
       return row.save();
     });
   }
+
+  // Returns
+  // - Map from player id to [points scored, doubles scored].
+  async getInterestingStats(): Promise<any> {
+    let playerSheet = this.playerSheet();
+
+    return Promise.all([this.playerSheet().getRows(), this.gameSheet().getRows(), this.getPointSheet().getRows()]).then(([playerRows, gameRows, pointRows]) => {
+      // Rank players by points scored.
+
+      // Maps player id to [points scored, doubles scored].
+      let playerPoints = pointRows.reduce((map, row) => {
+        let playerId = row.get('playerId');
+        if (playerId === undefined) {
+          throw new Error("playerId is undefined");
+        }
+        if (!map.has(playerId)) {
+          map.set(playerId, [0, 0]);
+        }
+        map.get(playerId)[0] += 1;
+        let double = false;
+        if (row.get('double') === 'TRUE') {
+          double = true;
+        }
+        else if (row.get('double') === 'FALSE') {
+          double = false;
+        }
+        else {
+          throw new Error("double is not TRUE or FALSE");
+        }
+        if (double) {
+          map.get(playerId)[1] += 1;
+        }
+        return map;
+      }, new Map());
+
+      return playerPoints;
+    });
+  }
 }

@@ -77,5 +77,12 @@ export class AppController {
     }
   }
 
-
+  @Get('live')
+  @Render('live')
+  async getLive() {
+    let [playerPoints, allPlayersMap] = await Promise.all([this.sheet.getInterestingStats(), this.sheet.getAllPlayersMap()]);
+    let sortedByPoints = Array.from(playerPoints.entries()).sort((a, b) => b[1][0] - a[1][0]).map(([playerId, [points, _]]) => { return [playerId, points] });
+    let sortedByDoubles = Array.from(playerPoints.entries()).sort((a, b) => b[1][1] - a[1][1]).map(([playerId, [_, doubles]]) => { return [playerId, doubles] });
+    return { sortedByPoints, sortedByDoubles, allPlayersMap };
+  }
 }
