@@ -4,6 +4,7 @@ import { readFile } from 'fs/promises';
 import { Player } from './player';
 import { Game } from './game';
 import { getConfig } from './config';
+import { Point } from './point';
 
 export const sheetProvider = {
   provide: 'SHEET_PROVIDER',
@@ -35,7 +36,7 @@ class SheetService {
     await this.sheet.loadInfo();
 
     // Check schemas.
-    await Promise.all([Player.checkSchema(this.playerSheet()), Game.checkSchema(this.gameSheet())]);
+    await Promise.all([Player.checkSchema(this.playerSheet()), Game.checkSchema(this.gameSheet()), Point.checkSchema(this.getPointSheet())]);
   }
 
   private gameSheet() {
