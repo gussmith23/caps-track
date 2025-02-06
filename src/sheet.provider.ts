@@ -235,33 +235,50 @@ class SheetService {
     return Promise.all([this.playerSheet().getRows(), this.gameSheet().getRows(), this.getPointSheet().getRows()]).then(([playerRows, gameRows, pointRows]) => {
       // Rank players by points scored.
 
-      // Maps player id to [points scored, doubles scored].
-      let playerPoints = pointRows.reduce((map, row) => {
-        let playerId = row.get('playerId');
-        if (playerId === undefined) {
-          throw new Error("playerId is undefined");
-        }
-        if (!map.has(playerId)) {
-          map.set(playerId, [0, 0]);
-        }
-        map.get(playerId)[0] += 1;
-        let double = false;
-        if (row.get('double') === 'TRUE') {
-          double = true;
-        }
-        else if (row.get('double') === 'FALSE') {
-          double = false;
-        }
-        else {
-          throw new Error("double is not TRUE or FALSE");
-        }
-        if (double) {
-          map.get(playerId)[1] += 1;
-        }
-        return map;
-      }, new Map());
+      // Points, with doubles/triples/etc computed.
+      let processedPoints = Point.fromRows(pointRows);
 
-      return playerPoints;
+      // Maps player id to a map from point type (nonneg integer) to number of
+      // points of that type. (0 = single, 1 = double, 2 = triple, etc.)
+      let playersToPointTypeMap = new Map();
+      for (let point of processedPoints) {
+        if (typeof point.double !== "number") {
+          throw new Error("point.double is not a number");
+        }
+        if (!playersToPointTypeMap.has(point.playerId)) {
+          playersToPointTypeMap.set(point.playerId, new Map());
+        }
+        let playerMap = playersToPointTypeMap.get(point.playerId);
+        if (!playerMap.has(point.double)) {
+          playerMap.set(point.double, 0);
+        }
+        playerMap.set(point.double, playerMap.get(point.double) + 1);
+      }
+
+      // Set of point types present. e.g. [0, 1] would indicate that only
+      // singles and doubles are present in all the data.
+      let allPointTypes = new Set();
+      for (let [_, playerMap] of playersToPointTypeMap) {
+        for (let pointType of playerMap.keys()) {
+          allPointTypes.add(pointType);
+        }
+      }
+
+      // Generate a map from point type to a list of [playerId, points of that
+      // type], sorted by points.
+      let pointTypeToSortedPlayersAndPoints = new Map();
+      for (let pointType of allPointTypes) {
+        let players = Array.from(playersToPointTypeMap.entries()).map(([playerId, playerMap]) => {
+          let points = playerMap.get(pointType);
+          if (points === undefined) {
+            points = 0;
+          }
+          return [playerId, points];
+        });
+        pointTypeToSortedPlayersAndPoints.set(pointType, players.filter(([_, points]) => points > 0).sort((a, b) => b[1] - a[1]));
+      }
+
+      return pointTypeToSortedPlayersAndPoints;
     });
   }
 }
