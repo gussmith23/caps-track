@@ -77,5 +77,10 @@ export class AppController {
     }
   }
 
-
+  @Get('live')
+  @Render('live')
+  async getLive() {
+    let [pointTypeToSortedPlayersAndPoints, allPlayersMap] = await Promise.all([this.sheet.getInterestingStats(), this.sheet.getAllPlayersMap()]);
+    return { pointTypeToSortedPlayersAndPoints, allPlayersMap };
+  }
 }
