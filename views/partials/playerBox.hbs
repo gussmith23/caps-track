@@ -5,26 +5,32 @@ inputs:
 - game: the game --}}
 <div class="player-box card fs-3" style="height: 100%">
   <div class="card-body">
-    <p>{{{formatPlayer player itemsMap}}}</p>
-    <p class="text-center fs-1">{{points}}</p>
+    <div class="row">
+      <p>{{{formatPlayer player itemsMap}}}</p>
+    </div>
+    <div class="row">
+      <p class="text-center fs-1">{{points}}</p>
+    </div>
 
     {{#unless game.endedAt}}
-    <div class="float-end">
-      <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
-        <input type="hidden" name="playerId" value="{{player.id}}">
-        <button type="submit"><tt>+</tt></button>
-      </form>
+    <div class="row">
+      <div class="float-end">
+        <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
+          <input type="hidden" name="playerId" value="{{player.id}}">
+          <button type="submit"><tt>+</tt></button>
+        </form>
 
-      <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
-        <input type="hidden" name="playerId" value="{{player.id}}">
-        <input type="hidden" name="double" value=1>
-        <button type="submit"><tt>d</tt></button>
-      </form>
+        <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
+          <input type="hidden" name="playerId" value="{{player.id}}">
+          <input type="hidden" name="double" value=1>
+          <button type="submit"><tt>d</tt></button>
+        </form>
 
-      <form style="display:inline" action="/game/{{game.id}}/removePoint" method="post">
-        <input type="hidden" name="playerId" value="{{player.id}}">
-        <button type="submit"><tt>-</tt></button>
-      </form>
+        <form style="display:inline" action="/game/{{game.id}}/removePoint" method="post">
+          <input type="hidden" name="playerId" value="{{player.id}}">
+          <button type="submit"><tt>-</tt></button>
+        </form>
+      </div>
     </div>
     {{/unless}}
   </div>
