@@ -14,17 +14,22 @@ export function formatPlayer(player: Player, itemsMap: Map<string, Item>) {
     style += `font-weight: ${player.fontWeight};`;
   }
 
-  let html = `<span style="${style}">${player.name}</span>`;
+  let classes = "";
 
+  let hat = "";
   if (player.equippedItemIds.length > 0) {
+    // Relative positioning, so that we can stack the item on top of the player name.
+    classes += "position-relative";
     if (player.equippedItemIds.length > 1) {
       throw new Error(`Not supported yet`);
     }
     let item = itemsMap.get(player.equippedItemIds[0]);
     let itemHtml = itemToHtml(item);
     // Stack the item above the existing html in an inline element.
-    html = `<table class="align-middle" style="text-align:center;display:inline-table;"><tr><td>${itemHtml}</td></tr><tr><td>${html}</td></tr></table>`;
+    hat = `<span class="position-absolute top-0 start-50 translate-middle" style="z-index:1;height:1em;width:1em;">${itemHtml}</span>`;
   }
+
+  let html = `<span class="${classes}" style="${style}">${hat}${player.name}</span>`;
 
   return html;
 }
