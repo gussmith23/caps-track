@@ -44,7 +44,8 @@ export function formatDate(date: Date, formatString: string) {
 
 export function itemToHtml(item: Item) {
   if (item.icon.startsWith('base64:')) {
-    return `<img src="${item.icon.slice(7)}" alt="${item.name}" />`;
+    // height and width of 1em means image scales with text
+    return `<img style="height:1em;width:1em;" src="${item.icon.slice(7)}" alt="${item.name}" />`;
   } else if (item.icon.startsWith('text:')) {
     return item.icon.slice(5);
   } else {
