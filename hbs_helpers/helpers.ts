@@ -2,22 +2,23 @@ import { Player } from "src/player"
 import { format } from "date-fns";
 import { Item } from "src/item";
 
-export function formatPlayer(player: Player, itemsMap: Map<string, Item>) {
+// - level: 0 is text only, 1 is text with font/color/weight, 2 is 1 with items
+export function formatPlayer(player: Player, itemsMap: Map<string, Item>, level: number = 0) {
   let style = "";
-  if (player.fontName) {
+  if (player.fontName && level >= 1) {
     style += `font-family: '${player.fontName}', serif;`;
   }
-  if (player.nameColor) {
+  if (player.nameColor && level >= 1) {
     style += `color: ${player.nameColor};`;
   }
-  if (player.fontWeight) {
+  if (player.fontWeight && level >= 1) {
     style += `font-weight: ${player.fontWeight};`;
   }
 
   let classes = "";
 
   let hat = "";
-  if (player.equippedItemIds.length > 0) {
+  if (player.equippedItemIds.length > 0 && level >= 2) {
     // Relative positioning, so that we can stack the item on top of the player name.
     classes += "position-relative";
     if (player.equippedItemIds.length > 1) {
@@ -26,7 +27,7 @@ export function formatPlayer(player: Player, itemsMap: Map<string, Item>) {
     let item = itemsMap.get(player.equippedItemIds[0]);
     let itemHtml = itemToHtml(item);
     // Stack the item above the existing html in an inline element.
-    hat = `<span class="position-absolute top-0 start-50 translate-middle" style="z-index:1;height:1em;width:1em;">${itemHtml}</span>`;
+    hat = `<span class="position-absolute start-50 translate-middle" style="top:-.1em;z-index:1;height:1em;width:1em;">${itemHtml}</span>`;
   }
 
   let html = `<span class="${classes}" style="${style}">${hat}${player.name}</span>`;
