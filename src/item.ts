@@ -1,12 +1,13 @@
 import { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from "google-spreadsheet"
 
+type Location = "hat" | "left" | "right";
 export class Item {
 
-  constructor(public id: string, public name: string, public icon: string, public price: number) { };
+  constructor(public id: string, public name: string, public icon: string, public price: number, public location: Location) { };
 
   static async checkSchema(arg0: GoogleSpreadsheetWorksheet): Promise<any> {
     return arg0.loadHeaderRow().then(_ => {
-      let expectedHeaderValues = ['id', 'name', 'icon', 'price'];
+      let expectedHeaderValues = ['id', 'name', 'icon', 'price', 'location'];
       for (let expectedHeaderValue of expectedHeaderValues) {
         if (!arg0.headerValues.includes(expectedHeaderValue)) {
           throw new Error(`Item sheet missing field "${expectedHeaderValue}"`);
@@ -31,6 +32,6 @@ export class Item {
       }
       return row.get(field);
     };
-    return new Item(errorIfUndefined('id'), errorIfUndefined('name'), errorIfUndefined('icon'), errorIfUndefined('price'));
+    return new Item(errorIfUndefined('id'), errorIfUndefined('name'), errorIfUndefined('icon'), errorIfUndefined('price'), errorIfUndefined('location'));
   }
 };
