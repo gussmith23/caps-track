@@ -2,11 +2,11 @@ import { assert } from "console";
 import { GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from "google-spreadsheet"
 
 export class Player {
-  constructor(public id: number, public name: string, public nameColor: string, public fontName: string, public fontWeight: string, public unlockedItemIds: [string], public equippedItemIds: [string]) { };
+  constructor(public id: number, public name: string, public nameColor: string, public fontId: string, public fontWeight: string, public unlockedItemIds: [string], public equippedItemIds: [string]) { };
 
   static async checkSchema(arg0: GoogleSpreadsheetWorksheet): Promise<any> {
     return arg0.loadHeaderRow().then(_ => {
-      let expectedHeaderValues = ['id', 'name', 'nameColor', 'fontName', 'fontWeight', 'unlockedItemIds', 'equippedItemIds'];
+      let expectedHeaderValues = ['id', 'name', 'nameColor', 'fontId', 'fontWeight', 'unlockedItemIds', 'equippedItemIds'];
       for (let expectedHeaderValue of expectedHeaderValues) {
         if (!arg0.headerValues.includes(expectedHeaderValue)) {
           throw new Error(`Player sheet missing field "${expectedHeaderValue}"`);
@@ -42,6 +42,6 @@ export class Player {
         throw new Error(`Player has equipped item ${id} but does not have it unlocked`);
       }
     }
-    return new Player(errorIfUndefined('id'), errorIfUndefined('name'), row.get('nameColor'), row.get('fontName'), row.get('fontWeight'), unlockedItemIds, equippedItemIds);
+    return new Player(errorIfUndefined('id'), errorIfUndefined('name'), row.get('nameColor'), row.get('fontId'), row.get('fontWeight'), unlockedItemIds, equippedItemIds);
   }
 };
