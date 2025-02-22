@@ -4,6 +4,8 @@ inputs:
 - activeGameIds: list of active game ids
 - concludedGameIds: list of concluded game ids
 - playersMap: map from id to player object, accessible by
+- itemsMap: map from id to item object
+- fontsMap: map from id to font object
 --}}
 <div class="container">
   <h2>New Game</h2>
@@ -122,6 +124,8 @@ inputs:
         player3=(mapLookup ../../playersMap this.player3id)
         player4=(mapLookup ../../playersMap this.player4id)
         displayDate=false
+        itemsMap=../../itemsMap
+        fontsMap=../../fontsMap
         }}</a>
     </li>
     {{/with}}
@@ -141,6 +145,8 @@ inputs:
         player3=(mapLookup ../../playersMap this.player3id)
         player4=(mapLookup ../../playersMap this.player4id)
         displayDate=true
+        itemsMap=../../itemsMap
+        fontsMap=../../fontsMap
         }}</a>
     </li>
     {{/with}}
