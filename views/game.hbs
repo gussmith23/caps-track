@@ -1,3 +1,9 @@
+{{!--
+Inputs
+- game
+- itemsMap
+- fontsMap
+--}}
 <div class="modal" id="editNameModal">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -19,7 +25,7 @@
 
 <div class="container">
   <h1>
-    {{>gameName game=game}}
+    {{>gameName game=game itemsMap=itemsMap fontsMap=fontsMap}}
     <button type="button" class="btn btn-light btn-sm ms-3" data-bs-toggle="modal"
       data-bs-target="#editNameModal">✎</button>
   </h1>
@@ -34,12 +40,12 @@
       <!--padding-->
     </div>
     <div class="col">
-      {{>playerBox player=player2 points=player2Score game=game}}
+      {{>playerBox player=player2 points=player2Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
     </div>
     <div class="col d-none d-sm-block">
     </div>
     <div class="col">
-      {{>playerBox player=player3 points=player3Score game=game}}
+      {{>playerBox player=player3 points=player3Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
     </div>
     <div class="col d-none d-sm-block">
       <!--padding-->
@@ -67,12 +73,12 @@
       <!--padding-->
     </div>
     <div class="col">
-      {{>playerBox player=player1 points=player1Score game=game}}
+      {{>playerBox player=player1 points=player1Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
     </div>
     <div class="col d-none d-sm-block">
     </div>
     <div class="col">
-      {{>playerBox player=player4 points=player4Score game=game}}
+      {{>playerBox player=player4 points=player4Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
     </div>
     <div class="col d-none d-sm-block">
       <!--padding-->

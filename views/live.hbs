@@ -1,0 +1,66 @@
+{{!--
+inputs:
+- pointTypeToSortedPlayersAndPoints: Map<pointtype:number, [[playerid, #points]]>: map from
+
+- allPlayersMap
+--}}
+<script>
+  window.setTimeout(function () {
+    window.location.reload();
+  }, 30000);
+</script>
+
+<div class="container">
+  {{#if (mapLookup pointTypeToSortedPlayersAndPoints 0)}}
+  <h2>Top Scorers</h2>
+  <table>
+    {{#each (mapLookup pointTypeToSortedPlayersAndPoints 0)}}
+    {{#with (mapLookup ../allPlayersMap (lookup this 0))}}
+    <tr>
+      <td>{{{formatPlayer this itemsMap}}}</td>
+      <td>{{../this.[1]}}</td>
+    </tr>
+    {{/with}}
+    {{/each}}
+    </table>
+    {{/if}}
+    {{#if (mapLookup pointTypeToSortedPlayersAndPoints 1)}}
+    <h2>Doubles</h2>
+    <table>
+      {{#each (mapLookup pointTypeToSortedPlayersAndPoints 1)}}
+      {{#with (mapLookup ../allPlayersMap (lookup this 0))}}
+      <tr>
+        <td>{{{formatPlayer this itemsMap}}}</td>
+        <td>{{../this.[1]}}</td>
+      </tr>
+      {{/with}}
+      {{/each}}
+    </table>
+    {{/if}}
+    {{#if (mapLookup pointTypeToSortedPlayersAndPoints 2)}}
+    <h2>Triples</h2>
+    <table>
+      {{#each (mapLookup pointTypeToSortedPlayersAndPoints 2)}}
+    {{#with (mapLookup ../allPlayersMap (lookup this 0))}}
+    <tr>
+      <td>{{{formatPlayer this itemsMap}}}</td>
+      <td>{{../this.[1]}}</td>
+    </tr>
+    {{/with}}
+    {{/each}}
+  </table>
+  {{/if}}
+  {{#if (mapLookup pointTypeToSortedPlayersAndPoints 3)}}
+  <h2>Quads</h2>
+  <table>
+    {{#each (mapLookup pointTypeToSortedPlayersAndPoints 3)}}
+    {{#with (mapLookup ../allPlayersMap (lookup this 0))}}
+    <tr>
+      <td>{{{formatPlayer this itemsMap}}}</td>
+      <td>{{../this.[1]}}</td>
+    </tr>
+    {{/with}}
+    {{/each}}
+  </table>
+  {{/if}}
+</div>
