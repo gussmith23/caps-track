@@ -5,13 +5,24 @@ inputs:
 - game: the game
 - itemsMap
 - fontsMap --}}
+<script>
+  function incrementPlayerPoints(playerId) {
+    // increment the player's points locally.
+    $(`#player${playerId}points`).text(parseInt($(`#player${playerId}points`).text()) + 1);
+  }
+  document.getElementById(`player{{player.id}}increment`).addEventListener("click", function () {
+    // increment the player's points locally.
+    $(`#player{{player.id}}points`).text(parseInt($(`#player{{player.id}}points`).text()) + 1);
+  }
+  );
+</script>
 <div class="player-box card fs-3" style="height: 100%">
   <div class="card-body">
     <div class="row">
       <p>{{{formatPlayer player itemsMap fontsMap 2}}}</p>
     </div>
     <div class="row">
-      <p class="text-center fs-1">{{points}}</p>
+      <p class="text-center fs-1" id="player{{player.id}}points">{{points}}</p>
     </div>
 
     {{#unless game.endedAt}}
@@ -19,7 +30,8 @@ inputs:
       <div class="float-end">
         <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
           <input type="hidden" name="playerId" value="{{player.id}}">
-          <button type="submit"><tt>+</tt></button>
+          <button type="submit" id="player{{player.id}}increment"
+            onclick="incrementPlayerPoints('{{player.id}}')"><tt>+</tt></button>
         </form>
 
         <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
