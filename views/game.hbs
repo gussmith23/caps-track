@@ -45,9 +45,9 @@ Inputs
     // Immediately log the event locally
     const element = document.getElementById(elementId);
     if (event.event === "remove") {
-      element.innerText = parseInt(element.innerText) - 1;
+      element.innerText = Math.max(0, parseInt(element.innerText) - 1);
     } else if (event.event === "add" || event.event === "double") {
-      element.innerText = parseInt(element.innerText) + 1;
+      element.innerText = Math.max(0, parseInt(element.innerText) + 1);
     } else {
       console.error("event must be 'add', 'remove', or 'double'");
     }
