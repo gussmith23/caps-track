@@ -77,9 +77,10 @@ export class AppController {
   }
 
   @Post('game/:id/renameGame')
-  async renameGame(@Param() params, @Body() body) {
+  async renameGame(@Param() params, @Body() body, @Res() res) {
     await this.sheet.renameGame(params.id, body.gameName);
     this.eventEmitter.emit('gameUpdated', params.id);
+    res.redirect(`/game/${params.id}`);
   }
 
   @Get('live')
