@@ -5,6 +5,9 @@ import { Font } from "src/font";
 
 // - level: 0 is text only, 1 is text with font/color/weight, 2 is 1 with items
 export function formatPlayer(player: Player, itemsMap: Map<string, Item>, fontsMap: Map<string, Font>, level: number = 0) {
+  if (!player) {
+    throw new Error("Player is undefined");
+  }
   let style = "";
   // Styles that only apply directly to the name text itself.
   let playerNameSpanStyle = "";
