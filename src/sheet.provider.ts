@@ -7,6 +7,7 @@ import { getConfig } from './config';
 import { Point } from './point';
 import { Item } from './item';
 import { Font } from './font';
+import { Logger } from '@nestjs/common';
 
 export const sheetProvider = {
   provide: 'SHEET_PROVIDER',
@@ -31,6 +32,8 @@ export const sheetProvider = {
 }
 
 class SheetService {
+  private readonly logger = new Logger(SheetService.name);
+
   constructor(private sheet: GoogleSpreadsheet) {
   }
 
@@ -160,6 +163,136 @@ class SheetService {
     });
   }
 
+  async addEvents(events: { gameId: string, event: string, datetime: Date, playerId: string }[]) {
+    events.sort((a, b) => { return new Date(a.datetime).getTime() - new Date(b.datetime).getTime() });
+
+
+    if (events.length === 0) {
+      return;
+    }
+    let gameId = events[0].gameId;
+    for (let event of events) {
+      if (event.gameId !== gameId) {
+        // This doesn't have to be the case, i'm just lazy right now.
+        throw new Error("gameId must be the same for all events");
+      }
+    }
+
+    // Simplify the adds/removes. If this batch adds and then removes the same player, we can just skip them.
+    let trueAddsAndDoubles = [];
+    let trueRemoves = [];
+    for (let event of events) {
+      if (event.event === "add" || event.event === "double") {
+        trueAddsAndDoubles.push(event);
+      } else if (event.event === "remove") {
+        // look for a matching add or double event in trueAddsAndDoubles and remove it.
+        let reversed = trueAddsAndDoubles.slice().reverse();
+        let eventToRemove = reversed.find((event2, _) => event2.playerId === event.playerId && event2.gameId === event.gameId);
+        // If we find a matching add or double event, remove it from trueAddsAndDoubles. Otherwise, add this event to trueRemoves.
+        if (eventToRemove) {
+          trueAddsAndDoubles.splice(trueAddsAndDoubles.indexOf(eventToRemove), 1);
+        } else {
+          trueRemoves.push(event);
+        }
+      }
+      else {
+        throw new Error("event must be add, double, or remove");
+      }
+    }
+
+    // Remove points the slow but sure way. See the comment below on the
+    // commented-out batch-remove function.
+    //
+    // TODO(@gussmith23): Should we instead do this as a chain of promises and
+    // thens? using e.g. reduce()? This is what I originally tried and I swear
+    // it didn't work, but I can't remember why. I've fought with this for long
+    // enough that, if this is working, I'm just going to let it be.
+    for (let event of trueRemoves) {
+      await this.removePoint(event.gameId, event.playerId);
+    }
+
+    let pointSheet = this.getPointSheet();
+    return this.isGameActive(gameId).then(isActive => {
+      if (!isActive) {
+        throw new Error("Game is not active");
+      }
+      else {
+        let rows = trueAddsAndDoubles.map(event => {
+          let double = undefined;
+          if (event.event === "double") {
+            double = true;
+          } else if (event.event === "add") {
+            double = false;
+          }
+          if (double === undefined) {
+            throw new Error("double is undefined");
+          }
+          return { gameId: event.gameId, double, playerId: event.playerId, datetime: event.datetime }
+        });
+        return pointSheet.addRows(rows);
+      }
+    });
+  }
+
+
+  // TODO(@gussmith23): Batch-removing like this does not seem to work. I think
+  // it has to do with the google-spreadsheets library or the Google API. It
+  // seems like removing row objects without awaiting them in between (i.e.
+  // doing a bunch of removals and returning them with Promises.all) causes bugs
+  // like removing unintended rows. I must be misunderstanding something about
+  // how the library works.
+  //
+  // TODO(@gussmith23): Could clean up this iterface; e.g. could just pass # of points to remove per player.
+  // async removePoints(
+  //   events: { gameId: string, event: string, datetime: Date, playerId: string }[]
+  // ) {
+  //   // Sorting may not even matter at this point?
+  //   events.sort((a, b) => { return new Date(a.datetime).getTime() - new Date(b.datetime).getTime() });
+  //   if (events.length === 0) {
+  //     return;
+  //   }
+  //   let gameId = events[0].gameId;
+  //   if (events.some(event => event.gameId !== gameId)) {
+  //     // Doesn't have to be true, I'm just implementing this lazily for now. And this is the common case.
+  //     throw new Error("gameId must be the same for all events");
+  //   }
+  //   for (let event of events) {
+  //     if (event.event !== "remove") {
+  //       throw new Error("event must be remove");
+  //     }
+  //   }
+
+  //   // Compute a map from playerId to the number of points to remove for that player.
+  //   let pointsToRemove = new Map();
+  //   for (let event of events) {
+  //     if (!pointsToRemove.has(event.playerId)) {
+  //       pointsToRemove.set(event.playerId, 0);
+  //     }
+  //     pointsToRemove.set(event.playerId, pointsToRemove.get(event.playerId) + 1);
+  //   }
+
+  //   let pointSheet = this.getPointSheet();
+  //   return this.isGameActive(gameId).then(isActive => {
+  //     if (!isActive) {
+  //       throw new Error("Game is not active");
+  //     }
+  //     else {
+  //       return pointSheet.getRows().then(rows => {
+  //         let sortedRows = rows.filter(row => row.get('gameId') == gameId).sort((a, b) => a.get('datetime') - b.get('datetime'));
+  //         let promises = [];
+
+  //         for (let [playerId, numToRemove] of pointsToRemove) {
+  //           let filteredRows = sortedRows.filter(row => row.get('playerId') == playerId);
+  //           this.logger.debug(`${filteredRows.slice(-numToRemove).length}`);
+  //           filteredRows.slice(-numToRemove).forEach(row => promises.push(row.delete()));
+  //         }
+  //         this.logger.debug("done generating promises");
+  //         return Promise.all(promises);
+  //       });
+  //     }
+  //   });
+  // }
+
   /// Removes latest point from specified player in specified game.
   async removePoint(gameId, playerId) {
     let pointSheet = this.getPointSheet();
@@ -171,7 +304,7 @@ class SheetService {
         return pointSheet.getRows().then(rows => {
           let sortedRows = rows.filter(row => row.get('gameId') == gameId && row.get('playerId') == playerId).sort((a, b) => a.get('datetime') - b.get('datetime'));
           if (sortedRows.length) {
-            sortedRows.pop().delete();
+            return sortedRows.pop().delete();
           }
         });
       }

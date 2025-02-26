@@ -4,34 +4,33 @@ inputs:
 - points: the number of points the player has
 - game: the game
 - itemsMap
-- fontsMap --}}
+- fontsMap
+Assumes the existence of a function called "scoreEvent" that takes an event and eventually posts it to the server (maybe
+as part of a batch).
+--}}
 <div class="player-box card fs-3" style="height: 100%">
   <div class="card-body">
     <div class="row">
       <p>{{{formatPlayer player itemsMap fontsMap 2}}}</p>
     </div>
     <div class="row">
-      <p class="text-center fs-1">{{points}}</p>
+      <p class="text-center fs-1" id="player{{player.id}}points">{{points}}</p>
     </div>
 
     {{#unless game.endedAt}}
+    <script>
+      if (window["scoreEvent"] === undefined) {
+        console.error("scoreEvent is undefined; this function should be defined in the template that includes this partial.");
+      }
+    </script>
     <div class="row">
       <div class="float-end">
-        <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
-          <input type="hidden" name="playerId" value="{{player.id}}">
-          <button type="submit"><tt>+</tt></button>
-        </form>
-
-        <form style="display:inline" action="/game/{{game.id}}/addPoint" method="post">
-          <input type="hidden" name="playerId" value="{{player.id}}">
-          <input type="hidden" name="double" value=1>
-          <button type="submit"><tt>d</tt></button>
-        </form>
-
-        <form style="display:inline" action="/game/{{game.id}}/removePoint" method="post">
-          <input type="hidden" name="playerId" value="{{player.id}}">
-          <button type="submit"><tt>-</tt></button>
-        </form>
+        <button
+          onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'add', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>+</tt></button>
+        <button
+          onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'double', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>d</tt></button>
+        <button
+          onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'remove', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>-</tt></button>
       </div>
     </div>
     {{/unless}}
