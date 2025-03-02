@@ -1,12 +1,11 @@
 import { Body, Controller, Get, Inject, Logger, Param, Post, Render, Res, Sse } from '@nestjs/common';
-import { AppService } from './app.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { filter, fromEvent, map } from 'rxjs';
 
 @Controller()
 export class AppController {
   private logger = new Logger(AppController.name);
-  constructor(private readonly appService: AppService, @Inject('SHEET_PROVIDER') private sheet, private eventEmitter: EventEmitter2) { }
+  constructor(@Inject('SHEET_PROVIDER') private sheet, private eventEmitter: EventEmitter2) { }
 
   @Get()
   @Render('index')
