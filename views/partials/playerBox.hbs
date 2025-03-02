@@ -8,12 +8,12 @@ inputs:
 Assumes the existence of a function called "scoreEvent" that takes an event and eventually posts it to the server (maybe
 as part of a batch).
 --}}
-<div class="player-box card fs-3" style="height: 100%">
+<div class="player-box card fs-3">
   <div class="card-body">
-    <div class="row">
-      <p>{{{formatPlayer player itemsMap fontsMap 2}}}</p>
+    <div class="player-box-name">
+      {{{formatPlayer player itemsMap fontsMap 2}}}
     </div>
-    <div class="row">
+    <div class="justify-content-center">
       <p class="text-center fs-1" id="player{{player.id}}points">{{points}}</p>
     </div>
 
@@ -24,13 +24,13 @@ as part of a batch).
       }
     </script>
     <div class="row">
-      <div class="float-end">
+      <div class="float-end d-flex justify-content-around">
         <button
-          onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'add', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>+</tt></button>
+          style="width:100%; margin-left: 0.1em; margin-right: 0.1em;" onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'add', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>+</tt></button>
         <button
-          onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'double', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>d</tt></button>
+          style="width:100%; margin-left: 0.1em; margin-right: 0.1em;" onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'double', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>d</tt></button>
         <button
-          onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'remove', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>-</tt></button>
+          style="width:100%; margin-left: 0.1em; margin-right: 0.1em;" onclick="scoreEvent({gameId: '{{game.id}}', playerId: '{{player.id}}', event: 'remove', datetime: new Date() }, /* id of element to update*/ 'player{{player.id}}points')"><tt>-</tt></button>
       </div>
     </div>
     {{/unless}}

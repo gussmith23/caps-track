@@ -104,54 +104,42 @@ Inputs
   {{/if}}
   <p>score: {{team1Score}} - {{team2Score}}</p>
 
-  <div class="row">
-    <div class="col d-none d-sm-block">
-      <!--padding-->
+  <div class="d-flex justify-content-center">
+    {{>playerBox player=player2 points=player2Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
+    <div class="col d-none d-sm-block" style="max-width: 8em;">
+      <!--padding for breakpoints larger than sm-->
     </div>
-    <div class="col">
-      {{>playerBox player=player2 points=player2Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
+    <div class="col" style="max-width: 2em;">
+      <!--padding that always exists-->
     </div>
-    <div class="col d-none d-sm-block">
+    {{>playerBox player=player3 points=player3Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
     </div>
-    <div class="col">
-      {{>playerBox player=player3 points=player3Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
-    </div>
-    <div class="col d-none d-sm-block">
-      <!--padding-->
-    </div>
-  </div>
-  <div class="row text-center">
-    <div class="col d-none d-sm-block">
-      <!--padding-->
-    </div>
-    <div class="col fs-1">
+  <div class="d-flex justify-content-center">
+    <div class="fs-1">
       🍺
     </div>
-    <div class="col fs-1">
+    <div class="col d-none d-sm-block" style="max-width: 8em;">
+      <!--padding for breakpoints larger than sm-->
+    </div>
+    <div class="fs-1">
       ↔
     </div>
-    <div class="col fs-1">
+    <div class="col d-none d-sm-block" style="max-width: 8em;">
+      <!--padding for breakpoints larger than sm-->
+    </div>
+    <div class="fs-1">
       🍺
     </div>
-    <div class="col d-none d-sm-block">
-      <!--padding-->
-    </div>
   </div>
-  <div class="row">
-    <div class="col d-none d-sm-block">
-      <!--padding-->
+  <div class="d-flex justify-content-center">
+    {{>playerBox player=player1 points=player1Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
+    <div class="col d-none d-sm-block" style="max-width: 8em;">
+      <!--padding for breakpoints larger than sm-->
     </div>
-    <div class="col">
-      {{>playerBox player=player1 points=player1Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
+    <div class="col" style="max-width: 2em;">
+      <!--padding that always exists-->
     </div>
-    <div class="col d-none d-sm-block">
-    </div>
-    <div class="col">
-      {{>playerBox player=player4 points=player4Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
-    </div>
-    <div class="col d-none d-sm-block">
-      <!--padding-->
-    </div>
+    {{>playerBox player=player4 points=player4Score game=game fontsMap=fontsMap itemsMap=itemsMap}}
   </div>
 
   {{#unless game.endedAt}}

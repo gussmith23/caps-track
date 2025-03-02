@@ -11848,4 +11848,17 @@ textarea.form-control-lg {
   filter: invert(1);
 }
 
+.player-box {
+  width: 5.9em;
+}
+
+.player-box-name {
+  text-align: center;
+  height: 2.7em;
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /*# sourceMappingURL=style.css.map */
