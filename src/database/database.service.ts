@@ -81,8 +81,18 @@ export abstract class DatabaseService {
 
     // Simplify the adds/removes. If this batch adds and then removes the same
     // player, we can just skip them.
-    let trueAddsAndDoubles = [];
-    let trueRemoves = [];
+    let trueAddsAndDoubles: {
+      gameId: string;
+      event: string;
+      datetime: Date;
+      playerId: string;
+    }[] = [];
+    let trueRemoves: {
+      gameId: string;
+      event: string;
+      datetime: Date;
+      playerId: string;
+    }[] = [];
     for (let event of events) {
       if (event.event === 'add' || event.event === 'double') {
         trueAddsAndDoubles.push(event);
@@ -126,15 +136,15 @@ export abstract class DatabaseService {
         throw new Error('Game is not active');
       } else {
         let rows = trueAddsAndDoubles.map((event) => {
-          let double = undefined;
+          let double: boolean;
           if (event.event === 'double') {
             double = true;
           } else if (event.event === 'add') {
             double = false;
+          } else {
+            throw new Error("Invalid value of 'event' at this point in the code"); 
           }
-          if (double === undefined) {
-            throw new Error('double is undefined');
-          }
+
           return {
             gameId: event.gameId,
             double,

@@ -22,9 +22,11 @@ export class Point {
     } else if (typeof double === 'number') {
       this.double = double;
     } else if (typeof double === 'string') {
-      this.double =
-        double === 'TRUE' ? true : double === 'FALSE' ? false : undefined;
-      if (this.double === undefined) {
+      if (double === 'TRUE') {
+        this.double = true;
+      } else if (double === 'FALSE') {
+        this.double = false;
+      } else {
         throw new Error(`Invalid value for double: ${double}`);
       }
     } else {

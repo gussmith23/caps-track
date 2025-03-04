@@ -13,13 +13,14 @@ import { Item } from '../item';
 import { Font } from '../font';
 import { Logger } from '@nestjs/common';
 import { DatabaseService } from './database.service';
+import { K } from 'handlebars';
 
 export const prodGoogleSheetsProvider = {
-  provide: 'SHEET_PROVIDER',
+  provide: 'DATABASE',
   useFactory: async () => {
     let config = await getConfig();
     let creds = JSON.parse(
-      await readFile(__dirname + '/../config/' + config['keyfile'], 'utf8'),
+      await readFile(__dirname + '/../../config/' + config['keyfile'], 'utf8'),
     );
 
     // Initialize auth - see https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication
@@ -39,13 +40,13 @@ export const prodGoogleSheetsProvider = {
   },
 };
 
-export const testGoogleSheetsProvider = {
-  provide: 'SHEET_PROVIDER',
+export const testGoogleSheetsProvider: { provide: "DATABASE", useFactory: any } = {
+  provide: "DATABASE",
   useFactory: async () => {
     let config = await getConfig();
     let creds = JSON.parse(
       await readFile(
-        __dirname + '/../config/' + config['testing-keyfile'],
+        __dirname + '/../../config/' + config['testing-keyfile'],
         'utf8',
       ),
     );
@@ -72,19 +73,19 @@ export const testGoogleSheetsProvider = {
 
 class GoogleSheetsService extends DatabaseService {
   getPlayerSchema(): Promise<string[]> {
-    throw new Error('Method not implemented.');
+    return this.playerSheet().loadHeaderRow().then(() => this.playerSheet().headerValues);
   }
   getGameSchema(): Promise<string[]> {
-    throw new Error('Method not implemented.');
+    return this.gameSheet().loadHeaderRow().then(() => this.gameSheet().headerValues);
   }
   getPointSchema(): Promise<string[]> {
-    throw new Error('Method not implemented.');
+    return this.getPointSheet().loadHeaderRow().then(() => this.getPointSheet().headerValues);
   }
   getItemSchema(): Promise<string[]> {
-    throw new Error('Method not implemented.');
+    return this.getItemSheet().loadHeaderRow().then(() => this.getItemSheet().headerValues);
   }
   getFontSchema(): Promise<string[]> {
-    throw new Error('Method not implemented.');
+    return this.getFontSheet().loadHeaderRow().then(() => this.getFontSheet().headerValues);
   }
 
   addPlayer(): Promise<string> {
@@ -94,10 +95,10 @@ class GoogleSheetsService extends DatabaseService {
     throw new Error('Method not implemented.');
   }
   getPoints(): Promise<Point[]> {
-    throw new Error('Method not implemented.');
+    return this.getPointSheet().getRows().then((rows) => rows.map(GoogleSheetsService.pointFromRow));
   }
   addPoints(points: Point[]): Promise<void> {
-    throw new Error('Method not implemented.');
+    return this.getPointSheet().addRows(points.map((point) => { return { gameId: point.gameId, double: point.double, datetime: point.datetime, playerId: point.playerId } })).then(() => { });
   }
 
   private readonly logger = new Logger(GoogleSheetsService.name);
@@ -199,7 +200,7 @@ class GoogleSheetsService extends DatabaseService {
 
       // This promise ensures that the game is added to the sheet before the id is returned.
 
-      return this.addGameToSheet(newGame, sheet).then((_) => id);
+      return this.addGameToSheet(newGame, sheet).then((_) => id.toString());
     });
   }
 
@@ -216,6 +217,9 @@ class GoogleSheetsService extends DatabaseService {
     }
     if (game.beganAt) {
       data['beganAt'] = game.beganAt;
+    }
+    if (game.name) {
+      data['name'] = game.name;
     }
     return sheet.addRow(data);
   }
@@ -265,7 +269,7 @@ class GoogleSheetsService extends DatabaseService {
       .then((rows) => rows.find((row) => row.get('id') == id))
       .then((row) => {
         if (typeof row === 'undefined') {
-          throw new Error(`game with id ${id} not found`);
+          return undefined;
         } else {
           return GoogleSheetsService.gameFromRow(row);
         }
@@ -313,6 +317,9 @@ class GoogleSheetsService extends DatabaseService {
           .getRows()
           .then((rows) => rows.find((row) => row.get('id') == gameId))
           .then((row) => {
+            if (typeof row === 'undefined') {
+              throw new Error(`Game ${gameId} not found`);
+            }
             row.set('endedAt', datetime);
             return row.save();
           });
@@ -409,7 +416,9 @@ class GoogleSheetsService extends DatabaseService {
             )
             .sort((a, b) => a.get('datetime') - b.get('datetime'));
           if (sortedRows.length) {
-            return sortedRows.pop().delete();
+            // We can use ! to avoid the undefined check here because of the
+            // length check above.
+            return sortedRows.pop()!.delete();
           }
         });
       }

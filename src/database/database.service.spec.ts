@@ -1,30 +1,17 @@
 import { Test } from '@nestjs/testing';
-import { getConfig } from '../config';
 import { DatabaseService } from './database.service';
-import { FakeDatabaseService } from './fakeDatabase.service';
 import { Point } from '../point';
+import { Provider } from '@nestjs/common';
 
-{
-  // Generate tests using the describeDatabaseService function below.
-
-  // Always test the fake database service.
-  describeDatabaseService(FakeDatabaseService.toString(), FakeDatabaseService);
-
-  // Test the Google Sheets database service if we have access to the test database.
-
-  // Get the config.
-  let config = (async () => await getConfig())();
-
-  if (config['testing-keyfile'] && config['testing-spreadsheet-id']) {
-    // describeDatabaseService
-  }
-}
+// Jest requires a test, which is annoying.
+describe('no tests', () => { it("doesn't do anything", () => { }) });
 
 // T should be a class extending DatabaseService. I'm not sure what the type of
 // classes in TypeScript is.
-function describeDatabaseService(
+// - provider: should be
+export function describeDatabaseService(
   description: string,
-  provider: any,
+  provider: Provider,
   readOnly: boolean = false,
 ) {
   describe(description, () => {
@@ -35,7 +22,7 @@ function describeDatabaseService(
         providers: [provider],
       }).compile();
       // TODO(@gussmith23): This likely won't work for our actual db providers.
-      service = moduleRef.get(provider);
+      service = await moduleRef.resolve("DATABASE");
     });
 
     it('should be defined', () => {
@@ -93,14 +80,10 @@ function describeDatabaseService(
     if (readOnly) return;
 
     describe('points', () => {
-      describe('getPoints', () => {
-        it('should return nothing from an empty database', async () => {
-          expect(await service.getPoints()).toHaveLength(0);
-        });
-      });
-
       describe('addPoints, getPoints, and removePoints', () => {
         it('should add points, get points, and remove points', async () => {
+          let initialLength = (await service.getPoints()).length;
+
           let point1 = {
             gameId: '1',
             playerId: '1',
@@ -116,25 +99,30 @@ function describeDatabaseService(
           await service.addPoints([point1, point2]);
 
           let points = await service.getPoints();
-          expect(points).toHaveLength(2);
-          expect(points).toContain(point1);
-          expect(points).toContain(point2);
+          expect(points).toHaveLength(initialLength + 2);
+          expect(points).toContainEqual(point1);
+          expect(points).toContainEqual(point2);
 
           await service.removePoint(point1.gameId, point1.playerId);
           await service.removePoint(point2.gameId, point2.playerId);
 
           points = await service.getPoints();
-          expect(points).toHaveLength(0);
+          expect(points).toHaveLength(initialLength + 0);
         });
       });
 
       describe('removePoints', () => {
         it('should not error when removing from empty points list', async () => {
-          await service.removePoint('0', '0');
+          let id = await service.addGame('0', '1', '2', '3', new Date());
+          expect(id).toBeDefined();
+          await service.removePoint(id, '0');
         });
 
         it('should remove the latest point', async () => {
-          let gameId = '1';
+          let points = await service.getPoints();
+          let initialLength = points.length;
+
+          let gameId = await service.addGame('0', '1', '2', '3', new Date());
           let playerId = '1';
           let point1 = { gameId, playerId, double: true, datetime: new Date() };
           let point2 = {
@@ -153,26 +141,26 @@ function describeDatabaseService(
           // Order shouldn't matter.
           await service.addPoints([point2, point3, point1]);
 
-          let points = await service.getPoints();
-          expect(points).toHaveLength(3);
-          expect(points).toContain(point1);
-          expect(points).toContain(point2);
-          expect(points).toContain(point3);
+          points = await service.getPoints();
+          expect(points).toHaveLength(initialLength + 3);
+          expect(points).toContainEqual(point1);
+          expect(points).toContainEqual(point2);
+          expect(points).toContainEqual(point3);
 
           await service.removePoint(gameId, playerId);
           points = await service.getPoints();
-          expect(points).toHaveLength(2);
-          expect(points).toContain(point1);
-          expect(points).toContain(point2);
+          expect(points).toHaveLength(initialLength + 2);
+          expect(points).toContainEqual(point1);
+          expect(points).toContainEqual(point2);
 
           await service.removePoint(gameId, playerId);
           points = await service.getPoints();
-          expect(points).toHaveLength(1);
-          expect(points).toContain(point1);
+          expect(points).toHaveLength(initialLength + 1);
+          expect(points).toContainEqual(point1);
 
           await service.removePoint(gameId, playerId);
           points = await service.getPoints();
-          expect(points).toHaveLength(0);
+          expect(points).toHaveLength(initialLength + 0);
         });
       });
 
@@ -180,16 +168,16 @@ function describeDatabaseService(
         it('should do nothing when passed an empty list', async () => {
           let points;
           points = await service.getPoints();
-          expect(points).toHaveLength(0);
+          let initialLength = points.length;
           await service.addAndRemovePoints([]);
           points = await service.getPoints();
-          expect(points).toHaveLength(0);
+          expect(points).toHaveLength(initialLength);
         });
 
         it('should add nothing when points cancel out', async () => {
           let points;
           points = await service.getPoints();
-          expect(points).toHaveLength(0);
+          let initialLength = points.length;
 
           await service.addAndRemovePoints([
             // Order shouldn't matter; only date order should matter.
@@ -215,42 +203,46 @@ function describeDatabaseService(
           ]);
 
           points = await service.getPoints();
-          expect(points).toHaveLength(0);
+          expect(points).toHaveLength(initialLength);
         });
 
         it('should cancel points correctly', async () => {
-          let gameId = await service.addGame('0', '1', '2', '3', new Date());
+          // We'll use this as an offset, to try and ensure the synthetic dates
+          // aren't already in the database (e.g. in the case of testing on the
+          // test database).
+          let now = new Date().getTime();
+          let gameId = await service.addGame('0', '1', '2', '3', new Date(new Date().getTime() + now));
 
           let points;
           points = await service.getPoints();
-          expect(points).toHaveLength(0);
+          let initialLength = points.length;
 
           await service.addAndRemovePoints([
             // Order shouldn't matter; only date order should matter.
             {
               gameId: gameId,
               playerId: '0',
-              datetime: new Date(2),
+              datetime: new Date(now + 2),
               event: 'remove',
             },
             {
               gameId: gameId,
               playerId: '0',
-              datetime: new Date(0),
+              datetime: new Date(now),
               event: 'add',
             },
             {
               gameId: gameId,
               playerId: '0',
-              datetime: new Date(1),
+              datetime: new Date(now + 3),
               event: 'double',
             },
           ]);
 
           points = await service.getPoints();
-          expect(points).toHaveLength(1);
+          expect(points).toHaveLength(initialLength + 1);
           expect(points).toContainEqual(
-            new Point('0', false, new Date(0), '0'),
+            new Point('0', false, new Date(now), '0'),
           );
         });
       });
@@ -297,14 +289,14 @@ function describeDatabaseService(
           let game1 = await service.getGame(game1id);
 
           expect(game1).toBeDefined();
-          expect(game1.id).toEqual(game1id);
-          expect(game1.player1id).toEqual(game1vals.player1id);
-          expect(game1.player2id).toEqual(game1vals.player2id);
-          expect(game1.player3id).toEqual(game1vals.player3id);
-          expect(game1.player4id).toEqual(game1vals.player4id);
-          expect(game1.beganAt).toEqual(game1vals.startDate);
-          expect(game1.endedAt).toEqual(game1vals.endDate);
-          expect(game1.name).toEqual(game1vals.name);
+          expect(game1!.id).toEqual(game1id);
+          expect(game1!.player1id).toEqual(game1vals.player1id);
+          expect(game1!.player2id).toEqual(game1vals.player2id);
+          expect(game1!.player3id).toEqual(game1vals.player3id);
+          expect(game1!.player4id).toEqual(game1vals.player4id);
+          expect(game1!.beganAt).toEqual(game1vals.startDate);
+          expect(game1!.endedAt).toEqual(game1vals.endDate);
+          expect(game1!.name).toEqual(game1vals.name);
 
           let game2id = await service.addGame(
             game2vals.player1id,
@@ -318,10 +310,10 @@ function describeDatabaseService(
           expect(game2id).not.toEqual(game1id);
 
           let game2 = await service.getGame(game2id);
-          expect(game2.name).toBeUndefined();
+          expect(game2).toBeDefined();
+          expect(game2!.name).toBeUndefined();
 
           let gamesMap = await service.getGamesMap();
-          expect(gamesMap.size).toBe(2);
           expect(gamesMap.get(game1id)).toEqual(game1);
           expect(gamesMap.get(game2id)).toEqual(game2);
         });
