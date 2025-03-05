@@ -2,4 +2,6 @@
   "spreadsheet-id": "the ID of the Google Sheet spreadsheet.",
   "port": "OPTIONAL, can delete, see default in src/config.ts: the port number on which the server will listen.",
   "keyfile": "OPTIONAL, can delete, see default in src/config.ts: the path to the key file. your key file should be stored in config/; this value is interpreted as a path relative to the config/ directory."
+  "testing-spreadsheet-id": "OPTIONAL: the ID of the spreadsheet used for testing. If not present, no read/write database testing will be done.",
+  "testing-keyfile": "OPTIONAL, can delete, see default in src/config.ts: a keyfile which has read-write access to the testing database"
 }
