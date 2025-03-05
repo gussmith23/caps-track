@@ -1,5 +1,5 @@
+import { describeDatabaseService } from './database.service';
 import { FakeDatabaseService } from './fakeDatabase.service';
-import { describeDatabaseService } from './database.service.spec';
 
 describeDatabaseService('fake database', {
   provide: 'DATABASE',
