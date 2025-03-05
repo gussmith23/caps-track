@@ -12,12 +12,14 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { filter, fromEvent, map } from 'rxjs';
+import { DatabaseService } from './database/database.service';
+import { Point } from './point';
 
 @Controller()
 export class AppController {
   private logger = new Logger(AppController.name);
   constructor(
-    @Inject('SHEET_PROVIDER') private sheet,
+    @Inject('DATABASE') private database: DatabaseService,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -25,11 +27,11 @@ export class AppController {
   @Render('index')
   async getIndex() {
     return Promise.all([
-      this.sheet.getAllGamesMap(),
-      this.sheet.getAllPlayersMap(),
-      this.sheet.getPhrases(),
-      this.sheet.getItemsMap(),
-      this.sheet.getFontsMap(),
+      this.database.getGamesMap(),
+      this.database.getPlayersMap(),
+      this.database.getPhrases(),
+      this.database.getItemsMap(),
+      this.database.getFontsMap(),
     ]).then(([gamesMap, playersMap, phrases, itemsMap, fontsMap]) => {
       let activeGameIds = [];
       let concludedGameIds = [];
@@ -54,23 +56,26 @@ export class AppController {
 
   @Post('newGame')
   async postNewGame(@Res() res, @Body() body) {
-    let id = await this.sheet.newGame(
+    let id = await this.database.addGame(
       body.player1,
       body.player2,
       body.player3,
       body.player4,
+      new Date(),
     );
     res.redirect(`/game/${id}`);
   }
 
   @Post('game/:id/addPoint')
   async addPoint(@Param() params, @Body() body) {
-    await this.sheet.addPoint(
-      params.id,
-      body.playerId,
-      body.double != undefined,
-      new Date(),
-    );
+    await this.database.addPoints([
+      new Point(
+        params.id,
+        body.double !== undefined,
+        new Date(),
+        body.playerId,
+      ),
+    ]);
     this.eventEmitter.emit('gameUpdated', params.id);
   }
 
@@ -92,27 +97,27 @@ export class AppController {
         );
       }
     }
-    await this.sheet.addEvents(body);
+    await this.database.addAndRemovePoints(body);
     this.eventEmitter.emit('gameUpdated', params.id);
     this.logger.log(`Added events to game ${params.id}`);
   }
 
   @Post('game/:id/removePoint')
   async removePoint(@Param() params, @Body() body) {
-    await this.sheet.removePoint(params.id, body.playerId);
+    await this.database.removePoint(params.id, body.playerId);
     this.eventEmitter.emit('gameUpdated', params.id);
   }
 
   @Post('game/:id/endGame')
   async endGame(@Param() params) {
-    await this.sheet.endGame(params.id, new Date());
+    await this.database.endGame(params.id, new Date());
     this.eventEmitter.emit('gameUpdated', params.id);
   }
 
   @Get('game/:id')
   @Render('game')
   async getGame(@Param() params) {
-    let game = await this.sheet.getGame(params.id);
+    let game = await this.database.getGame(params.id);
     let [
       [player1, player2, player3, player4],
       [
@@ -126,15 +131,15 @@ export class AppController {
       itemsMap,
       fontsMap,
     ] = await Promise.all([
-      this.sheet.getPlayers([
+      this.database.getPlayers([
         game.player1id,
         game.player2id,
         game.player3id,
         game.player4id,
       ]),
-      this.sheet.getScore(params.id),
-      this.sheet.getItemsMap(),
-      this.sheet.getFontsMap(),
+      this.database.getScore(params.id),
+      this.database.getItemsMap(),
+      this.database.getFontsMap(),
     ]);
     return {
       game: game,
@@ -155,7 +160,7 @@ export class AppController {
 
   @Post('game/:id/renameGame')
   async renameGame(@Param() params, @Body() body, @Res() res) {
-    await this.sheet.renameGame(params.id, body.gameName);
+    await this.database.renameGame(params.id, body.gameName);
     this.eventEmitter.emit('gameUpdated', params.id);
     res.redirect(`/game/${params.id}`);
   }
@@ -164,8 +169,8 @@ export class AppController {
   @Render('live')
   async getLive() {
     let [pointTypeToSortedPlayersAndPoints, allPlayersMap] = await Promise.all([
-      this.sheet.getInterestingStats(),
-      this.sheet.getAllPlayersMap(),
+      this.database.getInterestingStats(),
+      this.database.getAllPlayersMap(),
     ]);
     return { pointTypeToSortedPlayersAndPoints, allPlayersMap };
   }
