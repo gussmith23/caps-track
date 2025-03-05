@@ -142,7 +142,9 @@ export abstract class DatabaseService {
           } else if (event.event === 'add') {
             double = false;
           } else {
-            throw new Error("Invalid value of 'event' at this point in the code"); 
+            throw new Error(
+              "Invalid value of 'event' at this point in the code",
+            );
           }
 
           return {

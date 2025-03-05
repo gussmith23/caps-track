@@ -4,7 +4,9 @@ import { Point } from '../point';
 import { Provider } from '@nestjs/common';
 
 // Jest requires a test, which is annoying.
-describe('no tests', () => { it("doesn't do anything", () => { }) });
+describe('no tests', () => {
+  it("doesn't do anything", () => {});
+});
 
 // T should be a class extending DatabaseService. I'm not sure what the type of
 // classes in TypeScript is.
@@ -22,7 +24,7 @@ export function describeDatabaseService(
         providers: [provider],
       }).compile();
       // TODO(@gussmith23): This likely won't work for our actual db providers.
-      service = await moduleRef.resolve("DATABASE");
+      service = await moduleRef.resolve('DATABASE');
     });
 
     it('should be defined', () => {
@@ -83,16 +85,18 @@ export function describeDatabaseService(
       describe('addPoints, getPoints, and removePoints', () => {
         it('should add points, get points, and remove points', async () => {
           let initialLength = (await service.getPoints()).length;
+          let game1Id = await service.addGame('0', '1', '2', '3', new Date());
+          let game2Id = await service.addGame('4', '5', '6', '7', new Date());
 
           let point1 = {
-            gameId: '1',
+            gameId: game1Id,
             playerId: '1',
             double: true,
             datetime: new Date(),
           };
           let point2 = {
-            gameId: '2',
-            playerId: '2',
+            gameId: game2Id,
+            playerId: '5',
             double: false,
             datetime: new Date(),
           };
@@ -211,7 +215,13 @@ export function describeDatabaseService(
           // aren't already in the database (e.g. in the case of testing on the
           // test database).
           let now = new Date().getTime();
-          let gameId = await service.addGame('0', '1', '2', '3', new Date(new Date().getTime() + now));
+          let gameId = await service.addGame(
+            '0',
+            '1',
+            '2',
+            '3',
+            new Date(new Date().getTime() + now),
+          );
 
           let points;
           points = await service.getPoints();
@@ -242,7 +252,7 @@ export function describeDatabaseService(
           points = await service.getPoints();
           expect(points).toHaveLength(initialLength + 1);
           expect(points).toContainEqual(
-            new Point('0', false, new Date(now), '0'),
+            new Point(gameId, true, new Date(now + 3), '0'),
           );
         });
       });

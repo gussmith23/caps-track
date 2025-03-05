@@ -40,8 +40,11 @@ export const prodGoogleSheetsProvider = {
   },
 };
 
-export const testGoogleSheetsProvider: { provide: "DATABASE", useFactory: any } = {
-  provide: "DATABASE",
+export const testGoogleSheetsProvider: {
+  provide: 'DATABASE';
+  useFactory: any;
+} = {
+  provide: 'DATABASE',
   useFactory: async () => {
     let config = await getConfig();
     let creds = JSON.parse(
@@ -73,19 +76,29 @@ export const testGoogleSheetsProvider: { provide: "DATABASE", useFactory: any } 
 
 class GoogleSheetsService extends DatabaseService {
   getPlayerSchema(): Promise<string[]> {
-    return this.playerSheet().loadHeaderRow().then(() => this.playerSheet().headerValues);
+    return this.playerSheet()
+      .loadHeaderRow()
+      .then(() => this.playerSheet().headerValues);
   }
   getGameSchema(): Promise<string[]> {
-    return this.gameSheet().loadHeaderRow().then(() => this.gameSheet().headerValues);
+    return this.gameSheet()
+      .loadHeaderRow()
+      .then(() => this.gameSheet().headerValues);
   }
   getPointSchema(): Promise<string[]> {
-    return this.getPointSheet().loadHeaderRow().then(() => this.getPointSheet().headerValues);
+    return this.getPointSheet()
+      .loadHeaderRow()
+      .then(() => this.getPointSheet().headerValues);
   }
   getItemSchema(): Promise<string[]> {
-    return this.getItemSheet().loadHeaderRow().then(() => this.getItemSheet().headerValues);
+    return this.getItemSheet()
+      .loadHeaderRow()
+      .then(() => this.getItemSheet().headerValues);
   }
   getFontSchema(): Promise<string[]> {
-    return this.getFontSheet().loadHeaderRow().then(() => this.getFontSheet().headerValues);
+    return this.getFontSheet()
+      .loadHeaderRow()
+      .then(() => this.getFontSheet().headerValues);
   }
 
   addPlayer(): Promise<string> {
@@ -95,10 +108,31 @@ class GoogleSheetsService extends DatabaseService {
     throw new Error('Method not implemented.');
   }
   getPoints(): Promise<Point[]> {
-    return this.getPointSheet().getRows().then((rows) => rows.map(GoogleSheetsService.pointFromRow));
+    return this.getPointSheet()
+      .getRows()
+      .then((rows) => rows.map(GoogleSheetsService.pointFromRow));
   }
   addPoints(points: Point[]): Promise<void> {
-    return this.getPointSheet().addRows(points.map((point) => { return { gameId: point.gameId, double: point.double, datetime: point.datetime, playerId: point.playerId } })).then(() => { });
+    let length = points.length;
+    if (length === 0) {
+      return Promise.resolve();
+    }
+    return this.getPointSheet()
+      .addRows(
+        points.map((point) => {
+          return {
+            gameId: point.gameId,
+            double: point.double,
+            datetime: point.datetime,
+            playerId: point.playerId,
+          };
+        }),
+      )
+      .then((rows) => {
+        if (rows.length !== length) {
+          throw new Error('Failed to add all points');
+        }
+      });
   }
 
   private readonly logger = new Logger(GoogleSheetsService.name);

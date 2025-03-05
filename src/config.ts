@@ -2,12 +2,14 @@ import { readFileSync } from 'fs';
 
 const DEFAULT_CONFIG = 'config.json';
 // Default values for optional config values.
-const DEFAULT_CONFIG_VALUES = new Map(Object.entries({
-  "port": 3000,
-  "keyfile": 'key.json',
-  "testing-keyfile": 'testing-key.json',
-  "config": 'config.json',
-}));
+const DEFAULT_CONFIG_VALUES = new Map(
+  Object.entries({
+    port: 3000,
+    keyfile: 'key.json',
+    'testing-keyfile': 'testing-key.json',
+    config: 'config.json',
+  }),
+);
 
 export function getConfig() {
   // If CAPS_TRACK_CONFIG is set, then load the JSON file from that path.
