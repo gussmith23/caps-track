@@ -193,10 +193,10 @@ class GoogleSheetsService extends DatabaseService {
       // Using apply here because Math.max doesn't take an array. Weird that we
       // need to pass null. Blame JavaScript.
       let id =
-        Math.max.apply(
+        Math.max(Math.max.apply(
           null,
           rows.map((row) => Number(row.get('id'))),
-        ) + 1;
+        ) + 1, 0);
       let newGame = new Game(
         id.toString(),
         player1id,
