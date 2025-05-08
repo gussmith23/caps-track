@@ -13,6 +13,9 @@ export function formatPlayer(player: Player, itemsMap: Map<string, Item>, fontsM
   let playerNameSpanStyle = "";
   if (player.fontId && level >= 1) {
     let font = fontsMap.get(player.fontId);
+    if (font === undefined) {
+      throw new Error(`Font ${player.fontId} not found`);
+    }
     style += `font-family: '${font.name}', serif;`;
     if (font.size) {
       playerNameSpanStyle += `font-size: ${font.size};`;
@@ -35,6 +38,9 @@ export function formatPlayer(player: Player, itemsMap: Map<string, Item>, fontsM
     classes += "position-relative";
     for (let itemId of player.equippedItemIds) {
       let item = itemsMap.get(itemId);
+      if (item === undefined) {
+        throw new Error(`Item ${itemId} not found`);
+      }
       let itemHtml = itemToHtml(item);
       if (item.location === 'hat') {
         hat = `<span class="position-absolute start-50 translate-middle" style="top:-.1em;z-index:1">${itemHtml}</span>`;

@@ -33,8 +33,8 @@ export class AppController {
       this.database.getItemsMap(),
       this.database.getFontsMap(),
     ]).then(([gamesMap, playersMap, phrases, itemsMap, fontsMap]) => {
-      let activeGameIds = [];
-      let concludedGameIds = [];
+      let activeGameIds: string[] = [];
+      let concludedGameIds: string[] = [];
       for (let game of gamesMap.values()) {
         if (game.endedAt) {
           concludedGameIds.push(game.id);
@@ -56,6 +56,21 @@ export class AppController {
 
   @Post('newGame')
   async postNewGame(@Res() res, @Body() body) {
+    this.logger.debug(
+      `Creating new game with players ${body.player1}, ${body.player2}, ${body.player3}, ${body.player4}`,);
+
+    // Error if any of the players are undefined.
+    if (
+      body.player1 === undefined ||
+      body.player2 === undefined ||
+      body.player3 === undefined ||
+      body.player4 === undefined
+    ) {
+      this.logger.error('One or more players are undefined');
+      return res.status(400).send('One or more players are undefined');
+    }
+    // TODO(@gussmith23): Why isn't typescript catching that players can be
+    // undefined??
     let id = await this.database.addGame(
       body.player1,
       body.player2,
@@ -116,8 +131,11 @@ export class AppController {
 
   @Get('game/:id')
   @Render('game')
-  async getGame(@Param() params) {
+  async getGame(@Param() params, @Res() res) {
     let game = await this.database.getGame(params.id);
+    if (game === undefined) {
+      return res.status(404).send('Game not found');
+    }
     let [
       [player1, player2, player3, player4],
       [

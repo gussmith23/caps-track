@@ -198,7 +198,7 @@ class GoogleSheetsService extends DatabaseService {
           rows.map((row) => Number(row.get('id'))),
         ) + 1;
       let newGame = new Game(
-        id,
+        id.toString(),
         player1id,
         player2id,
         player3id,
@@ -442,13 +442,16 @@ class GoogleSheetsService extends DatabaseService {
   /// returns score in the form
   /// [team 1 score (player1+player3), team 2 score (player2+player4),
   ///  player 1 score, player 2 score, player 3 score, player 4 score]
-  async getScore(gameId) {
+  async getScore(gameId: string): Promise<[number, number, number, number, number, number]> {
     let pointSheet = this.getPointSheet();
     let game = this.getGame(gameId);
     let pointRows = pointSheet
       .getRows()
       .then((rows) => rows.filter((row) => row.get('gameId') == gameId));
     return Promise.all([game, pointRows]).then(([game, pointRows]) => {
+      if (game === undefined) {
+        throw new Error(`Game with id ${gameId} not found`);
+      }
       return pointRows.reduce(
         (acc, row) => {
           let id = row.get('playerId');
@@ -493,7 +496,7 @@ class GoogleSheetsService extends DatabaseService {
     return sheet.getRows().then((rows) => rows.map((row) => row.get('phrase')));
   }
 
-  async renameGame(gameId: number, gameName: string) {
+  async renameGame(gameId: string, gameName: string): Promise<void> {
     let sheet = this.gameSheet();
     return sheet.getRows().then((rows) => {
       let filtered = rows.filter((row) => row.get('id') === gameId);
