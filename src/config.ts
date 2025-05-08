@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+import { log } from 'console';
 import { readFileSync } from 'fs';
 
 const DEFAULT_CONFIG = 'config.json';
@@ -11,6 +13,8 @@ const DEFAULT_CONFIG_VALUES = new Map(
   }),
 );
 
+const logger = new Logger('Config');
+
 export function getConfig() {
   // If CAPS_TRACK_CONFIG is set, then load the JSON file from that path.
   // Otherwise, load the default config at config/config.json.
@@ -19,7 +23,7 @@ export function getConfig() {
   let config = JSON.parse(readFileSync(configPath, { encoding: 'utf8' }));
 
   // Set defaults for missing values.
-  for (let key in DEFAULT_CONFIG_VALUES) {
+  for (let [key, _] of DEFAULT_CONFIG_VALUES) {
     config[key] = config[key] ?? DEFAULT_CONFIG_VALUES.get(key);
   }
 
