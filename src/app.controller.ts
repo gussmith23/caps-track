@@ -188,7 +188,7 @@ export class AppController {
   async getLive() {
     let [pointTypeToSortedPlayersAndPoints, allPlayersMap] = await Promise.all([
       this.database.getInterestingStats(),
-      this.database.getAllPlayersMap(),
+      this.database.getPlayersMap(),
     ]);
     return { pointTypeToSortedPlayersAndPoints, allPlayersMap };
   }

@@ -4,8 +4,30 @@ import { Player } from 'src/player';
 import { Game } from '../game';
 import { DatabaseService } from './database.service';
 import { Point } from 'src/point';
+import { Font } from 'src/font';
 
 export class FakeDatabaseService extends DatabaseService {
+  renameGame(gameId: string, name: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  getFontsMap(): Promise<Map<string, Font>> {
+    throw new Error('Method not implemented.');
+  }
+  endGame(gameId: string, datetime: Date): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  getPlayers(ids: string[]) {
+    throw new Error('Method not implemented.');
+  }
+  getScore(gameId: string): Promise<[number, number, number, number, number, number]> {
+    throw new Error('Method not implemented.');
+  }
+  getInterestingStats(): Promise<Map<number, [string, number][]>> {
+    throw new Error('Method not implemented.');
+  }
+  getAllPlayers(): Promise<Player[]> {
+    throw new Error('Method not implemented.');
+  }
   private points: Point[] = [];
   private games: Map<string, Game> = new Map();
 

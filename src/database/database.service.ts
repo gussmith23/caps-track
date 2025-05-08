@@ -8,9 +8,16 @@ import { Player } from 'src/player';
 import { Test } from '@nestjs/testing';
 import { Point } from '../point';
 import { Provider } from '@nestjs/common';
+import { Font } from 'src/font';
 
 @Injectable()
 export abstract class DatabaseService {
+  getItemsMap(): any {
+    throw new Error('Method not implemented.');
+  }
+  getPhrases(): any {
+    throw new Error('Method not implemented.');
+  }
   // Database schemas.
   abstract getPlayerSchema(): Promise<string[]>;
   abstract getGameSchema(): Promise<string[]>;
@@ -37,6 +44,20 @@ export abstract class DatabaseService {
   // Returns the new player's ID.
   abstract addPlayer(): Promise<string>;
   abstract getPlayer(): Promise<Player | undefined>;
+
+  abstract renameGame(gameId: string, name: string): Promise<void>;
+  abstract getFontsMap(): Promise<Map<string, Font>>;
+  abstract endGame(gameId: string, datetime: Date): Promise<void>;
+  abstract getPlayers(ids: string[]);
+  // [team1, team2, player1, player2, player3, player4]
+  abstract getScore(gameId: string): Promise<[number, number, number, number, number, number]>;
+
+  // Returns a map of point types to a sorted list of tuples of player id, point
+  // count.
+  abstract getInterestingStats(): Promise<Map<number, [string, number][]>>;
+
+  abstract getAllPlayers(): Promise<Player[]>;
+
   abstract getPlayersMap(): Promise<Map<string, Player>>;
 
   async isGameActive(gameId) {
