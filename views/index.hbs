@@ -12,28 +12,28 @@ inputs:
   <div class="container text-center">
     <form action="/newGame" method="post">
       <script type="text/javascript">
-        on updateGamePreview() {
-                iew").text(
-                        :selected").text() + " and " +
-            $("#pl            ted").text() + " vs. " +
-              $("#player3             text() + " and " +
-            $("#player1 option            
-              );
-          }
-        </script>
-        <div class="row">
-          <div class="col d-none d-sm-block">
-            <!--padding-->
-          </div>
-          <div class="col">
-            <select name="player2" id="player2" onchange="updateGamePreview()">
-              <option value="" disabled selected>Player</option>
+        function updateGamePreview() {
+          $("#gamePreview").text(
+            $("#player2 option:selected").text() + " and " +
+            $("#player4 option:selected").text() + " vs. " +
+            $("#player3 option:selected").text() + " and " +
+            $("#player1 option:selected").text()
+          );
+        }
+      </script>
+      <div class="row">
+        <div class="col d-none d-sm-block">
+          <!--padding-->
+        </div>
+        <div class="col">
+          <select name="player2" id="player2" onchange="updateGamePreview()">
+            <option value="" disabled selected>Player</option>
             {{#each playersMap}}
             {{#with (lookup this 1)}}
             <option value="{{this.id}}">{{this.name}}</option>
             {{/with}}
             {{/each}}
-            </select>
+          </select>
         </div>
         <div class="col">
         </div>
@@ -80,7 +80,7 @@ inputs:
             <option value="{{this.id}}">{{this.name}}</option>
             {{/with}}
             {{/each}}
-            </select>
+          </select>
         </div>
         <div class="col">
         </div>
@@ -109,7 +109,7 @@ inputs:
           <button type="submit">New Game</button>
         </div>
       </div>
-      </form>
+    </form>
   </div>
 
   {{#if activeGameIds.length}}
