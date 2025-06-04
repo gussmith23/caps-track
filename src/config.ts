@@ -1,42 +1,58 @@
 import { Logger } from '@nestjs/common';
-import { log } from 'console';
-import { readFileSync } from 'fs';
 
-const DEFAULT_CONFIG = 'config.json';
-// Default values for optional config values.
-const DEFAULT_CONFIG_VALUES = new Map(
-  Object.entries({
-    port: 3000,
-    keyfile: 'key.json',
-    'testing-keyfile': 'testing-key.json',
-    config: 'config.json',
-  }),
-);
 
-const logger = new Logger('Config');
+const logger = new Logger(__filename);
 
-export function getConfig() {
-  // If CAPS_TRACK_CONFIG is set, then load the JSON file from that path.
-  // Otherwise, load the default config at config/config.json.
-  let configPath =
-    process.env.CAPS_TRACK_CONFIG ?? __dirname + '/../config/' + DEFAULT_CONFIG;
-  let config = JSON.parse(readFileSync(configPath, { encoding: 'utf8' }));
+// Define config type
+export type Config = {
+  dbHostname: string;
+  dbPort: number;
+  dbUsername: string;
+  dbPassword: string;
+  dbName: string;
+  port: number;
+};
 
-  // Set defaults for missing values.
-  for (let [key, _] of DEFAULT_CONFIG_VALUES) {
-    config[key] = config[key] ?? DEFAULT_CONFIG_VALUES.get(key);
+export function getConfig(): Config {
+  let config = {};
+
+  // Port configuration.
+  if (!process.env.CAPS_TRACK_PORT) {
+    throw new Error(
+      'Port configuration is incomplete. Please provide CAPS_TRACK_PORT as an environment variable.'
+    );
   }
+  config['port'] = parseInt(process.env.CAPS_TRACK_PORT);
 
-  // Overrides from environment variables.
-  if (process.env.CAPS_TRACK_KEYFILE) {
-    config['keyfile'] = process.env.CAPS_TRACK_KEYFILE;
+  // Database configuration.
+  if (!process.env.CAPS_TRACK_DB_HOSTNAME ||
+    !process.env.CAPS_TRACK_DB_PORT ||
+    !process.env.CAPS_TRACK_DB_USERNAME ||
+    !process.env.CAPS_TRACK_DB_PASSWORD ||
+    !process.env.CAPS_TRACK_DB_NAME) {
+    throw new Error(
+      'Database configuration is incomplete. Please provide as environment variables.'
+    );
   }
-  if (process.env.CAPS_TRACK_PORT) {
-    config['port'] = parseInt(process.env.CAPS_TRACK_PORT);
+  config['dbHostname'] = process.env.CAPS_TRACK_DB_HOSTNAME;
+  // Convert to number if it's a string
+  const port = parseInt(process.env.CAPS_TRACK_DB_PORT);
+  if (isNaN(port)) {
+    const errorStr = `Invalid database port: ${process.env.CAPS_TRACK_DB_PORT}`;
+    logger.error(errorStr);
+    throw new Error(errorStr);
   }
-  if (process.env.CAPS_TRACK_TESTING_KEYFILE) {
-    config['testing_keyfile'] = process.env.CAPS_TRACK_TESTING_KEYFILE;
-  }
+  config['dbPort'] = port;
+  config['dbUsername'] = process.env.CAPS_TRACK_DB_USERNAME;
+  config['dbPassword'] = process.env.CAPS_TRACK_DB_PASSWORD;
+  config['dbName'] = process.env.CAPS_TRACK_DB_NAME;
 
-  return config;
+  return {
+    dbHostname: config['dbHostname'],
+    dbPort: config['dbPort'],
+    dbUsername: config['dbUsername'],
+    dbPassword: config['dbPassword'],
+    dbName: config['dbName'],
+    port: config['port'],
+  };
 }

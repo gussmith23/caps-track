@@ -2,28 +2,20 @@
 // separate the definition of the interface from any given implementation (e.g.
 // the Google Sheets implementation).
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Game } from 'src/game';
 import { Player } from 'src/player';
 import { Test } from '@nestjs/testing';
 import { Point } from '../point';
 import { Provider } from '@nestjs/common';
 import { Font } from 'src/font';
+import { Item } from 'src/item';
 
 @Injectable()
 export abstract class DatabaseService {
-  getItemsMap(): any {
-    throw new Error('Method not implemented.');
-  }
-  getPhrases(): any {
-    throw new Error('Method not implemented.');
-  }
-  // Database schemas.
-  abstract getPlayerSchema(): Promise<string[]>;
-  abstract getGameSchema(): Promise<string[]>;
-  abstract getPointSchema(): Promise<string[]>;
-  abstract getItemSchema(): Promise<string[]>;
-  abstract getFontSchema(): Promise<string[]>;
+  abstract getItemsMap(): Promise<Map<string, Item>>; j
+
+  abstract getPhrases(): Promise<string[]>;
 
   // Initialization routine, if needed. Must be called before use.
   abstract init();
@@ -42,8 +34,8 @@ export abstract class DatabaseService {
   abstract getGamesMap(): Promise<Map<string, Game>>;
 
   // Returns the new player's ID.
-  abstract addPlayer(): Promise<string>;
-  abstract getPlayer(): Promise<Player | undefined>;
+  abstract addPlayer(display_name: string): Promise<string>;
+  abstract getPlayer(id: string): Promise<Player | undefined>;
 
   abstract renameGame(gameId: string, name: string): Promise<void>;
   abstract getFontsMap(): Promise<Map<string, Font>>;
@@ -190,6 +182,9 @@ export function describeDatabaseService(
   description: string,
   provider: Provider,
   readOnly: boolean = false,
+  beforeEachFn?: (DatabaseService) => void,
+  afterEachFn?: (DatabaseService) => void,
+  afterAllFn?: (DatabaseService) => void,
 ) {
   describe(description, () => {
     let service: DatabaseService;
@@ -200,57 +195,25 @@ export function describeDatabaseService(
       }).compile();
       // TODO(@gussmith23): This likely won't work for our actual db providers.
       service = await moduleRef.resolve('DATABASE');
+      if (beforeEachFn) {
+        beforeEachFn(service);
+      }
+    });
+
+    afterEach(async () => {
+      if (afterEachFn) {
+        afterEachFn(service);
+      }
+    });
+
+    afterAll(async () => {
+      if (afterAllFn) {
+        afterAllFn(service);
+      }
     });
 
     it('should be defined', () => {
       expect(service).toBeDefined();
-    });
-
-    // Readonly tests currently just test the database schemas..
-    // await Promise.all([Player.checkSchema(this.playerSheet()), Game.checkSchema(this.gameSheet()), Point.checkSchema(this.getPointSheet()), Item.checkSchema(this.getItemSheet()), Font.checkSchema(this.getFontSheet())]);
-    describe('schemas', () => {
-      it('has correct Player schema', async () => {
-        expect(new Set(await service.getPlayerSchema())).toEqual(
-          new Set([
-            'id',
-            'name',
-            'nameColor',
-            'fontId',
-            'fontWeight',
-            'unlockedItemIds',
-            'equippedItemIds',
-          ]),
-        );
-      });
-      it('has correct Game schema', async () => {
-        expect(new Set(await service.getGameSchema())).toEqual(
-          new Set([
-            'id',
-            'beganAt',
-            'player1',
-            'player2',
-            'player3',
-            'player4',
-            'endedAt',
-            'name',
-          ]),
-        );
-      });
-      it('has correct Point schema', async () => {
-        expect(new Set(await service.getPointSchema())).toEqual(
-          new Set(['gameId', 'double', 'datetime', 'playerId']),
-        );
-      });
-      it('has correct Item schema', async () => {
-        expect(new Set(await service.getItemSchema())).toEqual(
-          new Set(['id', 'name', 'icon', 'price', 'location']),
-        );
-      });
-      it('has correct Font schema', async () => {
-        expect(new Set(await service.getFontSchema())).toEqual(
-          new Set(['id', 'name', 'size']),
-        );
-      });
     });
 
     // Return early if only doing the readonly tests.
@@ -259,19 +222,28 @@ export function describeDatabaseService(
     describe('points', () => {
       describe('addPoints, getPoints, and removePoints', () => {
         it('should add points, get points, and remove points', async () => {
+          let [player1id, player2id, player3id, player4id, player5id, player6id, player7id, player8id] = await Promise.all([
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),]);
           let initialLength = (await service.getPoints()).length;
-          let game1Id = await service.addGame('0', '1', '2', '3', new Date());
-          let game2Id = await service.addGame('4', '5', '6', '7', new Date());
+          let game1Id = await service.addGame(player1id, player2id, player3id, player4id, new Date());
+          let game2Id = await service.addGame(player5id, player6id, player7id, player8id, new Date());
 
           let point1 = {
             gameId: game1Id,
-            playerId: '1',
+            playerId: player1id,
             double: true,
             datetime: new Date(),
           };
           let point2 = {
             gameId: game2Id,
-            playerId: '5',
+            playerId: player5id,
             double: false,
             datetime: new Date(),
           };
@@ -292,27 +264,43 @@ export function describeDatabaseService(
 
       describe('removePoints', () => {
         it('should not error when removing from empty points list', async () => {
-          let id = await service.addGame('0', '1', '2', '3', new Date());
+          let [player1id, player2id, player3id, player4id] = await Promise.all([
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+          ]);
+          let id = await service.addGame(player1id, player2id, player3id, player4id, new Date());
           expect(id).toBeDefined();
-          await service.removePoint(id, '0');
+          await service.removePoint(id, player1id);
         });
 
         it('should remove the latest point', async () => {
           let points = await service.getPoints();
           let initialLength = points.length;
 
-          let gameId = await service.addGame('0', '1', '2', '3', new Date());
-          let playerId = '1';
-          let point1 = { gameId, playerId, double: true, datetime: new Date() };
+          let [player1id, player2id, player3id, player4id] = await Promise.all([
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+          ]);
+
+          let gameId = await service.addGame(
+            player1id, player2id,
+            player3id,
+            player4id,
+            new Date());
+          let point1 = { gameId, playerId: player1id, double: true, datetime: new Date() };
           let point2 = {
             gameId,
-            playerId,
+            playerId: player1id,
             double: false,
             datetime: new Date(new Date().getTime() + 30000),
           };
           let point3 = {
             gameId,
-            playerId,
+            playerId: player1id,
             double: true,
             datetime: new Date(new Date().getTime() + 60000),
           };
@@ -326,18 +314,18 @@ export function describeDatabaseService(
           expect(points).toContainEqual(point2);
           expect(points).toContainEqual(point3);
 
-          await service.removePoint(gameId, playerId);
+          await service.removePoint(gameId, player1id);
           points = await service.getPoints();
           expect(points).toHaveLength(initialLength + 2);
           expect(points).toContainEqual(point1);
           expect(points).toContainEqual(point2);
 
-          await service.removePoint(gameId, playerId);
+          await service.removePoint(gameId, player1id);
           points = await service.getPoints();
           expect(points).toHaveLength(initialLength + 1);
           expect(points).toContainEqual(point1);
 
-          await service.removePoint(gameId, playerId);
+          await service.removePoint(gameId, player1id);
           points = await service.getPoints();
           expect(points).toHaveLength(initialLength + 0);
         }, 15000);
@@ -386,39 +374,44 @@ export function describeDatabaseService(
         });
 
         it('should cancel points correctly', async () => {
+          let [player1id, player2id, player3id, player4id] = await Promise.all([
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+          ]);
           // We'll use this as an offset, to try and ensure the synthetic dates
           // aren't already in the database (e.g. in the case of testing on the
           // test database).
           let now = new Date().getTime();
           let gameId = await service.addGame(
-            '0',
-            '1',
-            '2',
-            '3',
+            player1id,
+            player2id,
+            player3id,
+            player4id,
             new Date(new Date().getTime() + now),
           );
 
-          let points;
-          points = await service.getPoints();
+          let points = await service.getPoints();
           let initialLength = points.length;
 
           await service.addAndRemovePoints([
             // Order shouldn't matter; only date order should matter.
             {
               gameId: gameId,
-              playerId: '0',
+              playerId: player1id,
               datetime: new Date(now + 2),
               event: 'remove',
             },
             {
               gameId: gameId,
-              playerId: '0',
+              playerId: player1id,
               datetime: new Date(now),
               event: 'add',
             },
             {
               gameId: gameId,
-              playerId: '0',
+              playerId: player1id,
               datetime: new Date(now + 3),
               event: 'double',
             },
@@ -427,7 +420,7 @@ export function describeDatabaseService(
           points = await service.getPoints();
           expect(points).toHaveLength(initialLength + 1);
           expect(points).toContainEqual(
-            new Point(gameId, true, new Date(now + 3), '0'),
+            new Point(gameId, true, new Date(now + 3), player1id),
           );
         });
       });
@@ -436,28 +429,41 @@ export function describeDatabaseService(
     describe('games', () => {
       describe('getGame', () => {
         it('should return undefined for nonexistent games', async () => {
-          expect(await service.getGame('nonexistent')).toBeUndefined();
+          expect(await service.getGame('10000')).toBeUndefined();
         });
       });
 
       describe('addGame,  getGame, and getGamesMap', () => {
         it('should add games, get games, and get games as a map', async () => {
+          // Add players.
+          let [player1id, player2id, player3id, player4id, player5id, player6id, player7id, player8id] = await Promise.all([
+            service.addPlayer("test"),
+            service.addPlayer("test"),
+            service.addPlayer("test"),
+            service.addPlayer("test"),
+            service.addPlayer("test"),
+            service.addPlayer("test"),
+            service.addPlayer("test"),
+            service.addPlayer("test"),
+          ]);
+          expect(new Set([player1id, player2id, player3id, player4id, player5id, player6id, player7id, player8id]).size).toEqual(8);
+
           let game1vals = {
             startDate: new Date(),
             endDate: new Date(),
-            player1id: '1',
-            player2id: '2',
-            player3id: '3',
-            player4id: '4',
+            player1id: player1id,
+            player2id: player2id,
+            player3id: player3id,
+            player4id: player4id,
             name: 'test game',
           };
           let game2vals = {
             startDate: new Date(),
             endDate: new Date(),
-            player1id: '5',
-            player2id: '6',
-            player3id: '7',
-            player4id: '8',
+            player1id: player5id,
+            player2id: player6id,
+            player3id: player7id,
+            player4id: player8id,
           };
 
           let game1id = await service.addGame(
@@ -501,6 +507,123 @@ export function describeDatabaseService(
           let gamesMap = await service.getGamesMap();
           expect(gamesMap.get(game1id)).toEqual(game1);
           expect(gamesMap.get(game2id)).toEqual(game2);
+        });
+      });
+
+      describe('getScore', () => {
+        it('should return the score for a game', async () => {
+          let [player1id, player2id, player3id, player4id] = await Promise.all([
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+            service.addPlayer('test'),
+          ]);
+          let gameId = await service.addGame(
+            player1id,
+            player2id,
+            player3id,
+            player4id,
+            new Date(),
+          );
+
+          let score = await service.getScore(gameId);
+          expect(score).toBeInstanceOf(Array);
+          expect(score.length).toEqual(6);
+          expect(score[0]).toEqual(0); // team1 score
+          expect(score[1]).toEqual(0); // team2 score
+          expect(score[2]).toEqual(0); // player1 score
+          expect(score[3]).toEqual(0); // player2 score
+          expect(score[4]).toEqual(0); // player3 score
+          expect(score[5]).toEqual(0); // player4 score
+
+          // Add some points.
+          let point1 = {
+            gameId: gameId,
+            playerId: player1id,
+            double: false,
+            datetime: new Date(),
+          };
+
+          let point2 = {
+            gameId: gameId,
+            playerId: player2id,
+            double: false,
+            datetime: new Date(),
+          };
+          await service.addPoints([point1, point2]);
+
+          score = await service.getScore(gameId);
+          expect(score).toBeInstanceOf(Array);
+          expect(score.length).toEqual(6);
+          expect(score[0]).toEqual(1); // team1 score
+          expect(score[1]).toEqual(1); // team2 score
+          expect(score[2]).toEqual(1); // player1 score
+          expect(score[3]).toEqual(1); // player2 score
+          expect(score[4]).toEqual(0); // player3 score
+          expect(score[5]).toEqual(0); // player4 score
+        });
+      })
+    });
+
+    describe('players', () => {
+      describe('addPlayer, getPlayer, and getPlayersMap', () => {
+        it('should add players, get players, and get players as a map', async () => {
+          let player1id = await service.addPlayer('test');
+          expect(player1id).toBeDefined();
+          let player1 = await service.getPlayer(player1id);
+          expect(player1).toBeDefined();
+          expect(player1!.id).toEqual(player1id);
+          expect(player1!.name).toEqual('test');
+
+          let player2id = await service.addPlayer('test2');
+          expect(player2id).toBeDefined();
+          let player2 = await service.getPlayer(player2id);
+          expect(player2).toBeDefined();
+          expect(player2!.id).toEqual(player2id);
+          expect(player2!.name).toEqual('test2');
+
+          let playersMap = await service.getPlayersMap();
+          expect(playersMap.get(player1id)).toEqual(player1);
+          expect(playersMap.get(player2id)).toEqual(player2);
+
+          let players = await service.getAllPlayers();
+          expect(players).toBeInstanceOf(Array);
+          expect(players.length).toBeGreaterThanOrEqual(2);
+          expect(players).toContainEqual(player1);
+          expect(players).toContainEqual(player2);
+
+          players = await service.getPlayers([player1id, player2id]);
+          expect(players).toBeInstanceOf(Array);
+          expect(players.length).toEqual(2);
+          expect(players).toContainEqual(player1);
+          expect(players).toContainEqual(player2);
+        });
+      });
+    });
+
+    describe('items', () => {
+      describe('getItemsMap', () => {
+        it('should return a map of items', async () => {
+          let itemsMap = await service.getItemsMap();
+          expect(itemsMap).toBeInstanceOf(Map);
+        });
+      });
+    });
+
+    describe('phrases', () => {
+      describe('getPhrases', () => {
+        it('should return a list of phrases', async () => {
+          let phrases = await service.getPhrases();
+          expect(phrases).toBeInstanceOf(Array);
+        });
+      });
+    });
+
+    describe('fonts', () => {
+      describe('getFontsMap', () => {
+        it('should return a map of fonts', async () => {
+          let fontsMap = await service.getFontsMap();
+          expect(fontsMap).toBeInstanceOf(Map);
         });
       });
     });

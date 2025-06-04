@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { createGoogleSheetsProvider } from './database/googleSheetsDatabase.service';
+import { createPostgresDatabaseProvider } from './database/postgresDatabase.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { getConfig } from './config';
 
@@ -10,7 +10,9 @@ let config = getConfig();
   imports: [EventEmitterModule.forRoot()],
   controllers: [AppController],
   providers: [
-    createGoogleSheetsProvider(config['keyfile'], config['spreadsheet-id']),
+    createPostgresDatabaseProvider(
+      { username: config.dbUsername, password: config.dbPassword, database: config.dbName, host: config.dbHostname, port: config.dbPort },
+    )
   ],
 })
-export class AppModule {}
+export class AppModule { }

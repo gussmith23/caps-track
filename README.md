@@ -40,3 +40,15 @@ This means that teams are player 1 and player 3 vs player 2 and player 4. I've a
 ### Custom Bootstrap 
 
 We use Bootstrap for styling. We also customize Bootstrap a bit (e.g. to make the logo change colors when you flip between dark and light themes). Customizing Bootstrap is easy and well-supported. We have our own main style file, `scss/style.scss`, which imports Bootstrap and adds our custom styles. Then, in the build scripts in `package.json`, this file is compiled into the main `style.css` file and moved into `assets/`, which is eventually copied into the `dist/` by Nest.js and imported in all of our HTML (see `default.hbs`).
+
+## Architecture
+
+Entry is in `main.ts`.
+
+Database schema checking is really basic. Basically: log into the database and check that it matches expectations. If it doesn't, fail. If the table doesn't exist at all, create it. No migrations or anything; either manually migrate or delete the database each time.
+
+Entire config is stored in `.env` file. See `.env.template` and 12-factor app.
+
+Testing:
+Unit tests are stored in `src/` alongside implementation files. These should be runnable with a basic invocation of `jest`; use `npm run test`.
+Integration/end-to-end tests are stored in `test/`. These require the rest of the environment to be set up (e.g. the Postgres database.)

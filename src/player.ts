@@ -1,9 +1,3 @@
-import { assert } from 'console';
-import {
-  GoogleSpreadsheetRow,
-  GoogleSpreadsheetWorksheet,
-} from 'google-spreadsheet';
-
 export class Player {
   constructor(
     public id: string,

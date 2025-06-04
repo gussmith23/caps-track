@@ -1,3 +1,9 @@
+import { Logger } from '@nestjs/common';
+
+// Load environment variables from .env file
+require('dotenv').config();
+Logger.debug("Environment variables loaded from .env file.");
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -10,7 +16,7 @@ import {
 } from 'hbs_helpers/helpers';
 import { engine } from 'express-handlebars';
 import { getConfig } from './config';
-import { Logger } from '@nestjs/common';
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {

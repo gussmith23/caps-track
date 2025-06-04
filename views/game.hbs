@@ -21,6 +21,36 @@ Inputs
   // to the queue and the timer is reset.
   function scoreEvent(event, elementId) {
 
+    // Validate the event object
+    if (typeof event !== "object" || event === null) {
+      console.error("event must be an object");
+      return;
+    }
+    if (!("gameId" in event, "gameId is required")) {
+      console.error("gameId is required");
+      return;
+    }
+    if (typeof event.gameId !== "string") {
+      console.error("gameId must be a string");
+      return;
+    }
+    if (!("playerId" in event, "playerId is required")) {
+      console.error("playerId is required");
+      return;
+    }
+    if (typeof event.playerId !== "string") {
+      console.error("playerId must be a string");
+      return;
+    }
+    if (!("datetime" in event, "datetime is required")) {
+      console.error("datetime is required");
+      return;
+    }
+    if (typeof event.datetime !== "object" || !(event.datetime instanceof Date)) {
+      console.error("datetime must be a Date object");
+      return;
+    }
+
     if (!("playerId" in event, "playerId is required")) {
       console.error("playerId is required");
       return;
