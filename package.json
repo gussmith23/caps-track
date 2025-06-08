@@ -15,11 +15,11 @@
     "start:debug": "concurrently --kill-others \"npm run css-watch\" \"nest start --debug --watch\"",
     "start:prod": "npm run css-once && node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test": "jest --setupFiles dotenv/config",
+    "test:watch": "jest --setupFiles dotenv/config --watch",
+    "test:cov": "jest --setupFiles dotenv/config --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest   --setupFiles dotenv/config  --runInBand",
+    "test:e2e": "jest --setupFiles dotenv/config --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -28,10 +28,13 @@
     "@nestjs/platform-express": "^10.0.0",
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
     "express-handlebars": "^8.0.1",
     "google-auth-library": "^9.15.0",
     "google-spreadsheet": "^4.1.4",
     "hbs": "^4.2.0",
+    "postgres": "^3.4.7",
+    "postgres-date": "^2.1.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

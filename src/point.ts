@@ -1,8 +1,3 @@
-import {
-  GoogleSpreadsheetRow,
-  GoogleSpreadsheetWorksheet,
-} from 'google-spreadsheet';
-
 export class Point {
   // If double is a boolean, it simply indicates whether the point was a
   // double/triple/quad or not. If double is a number, it indicates the type of
@@ -32,6 +27,8 @@ export class Point {
     } else {
       throw new Error(`Invalid value for double: ${double}`);
     }
+
+    this.datetime = new Date(datetime);
   }
 
   // Process point rows to compute doubles/triples/etc. Converts the `double`

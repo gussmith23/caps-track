@@ -112,6 +112,15 @@ export class AppController {
         );
       }
     }
+    // Convert all datetimes to Date objects.
+    for (let event of body) {
+      if (typeof event.datetime === 'string') {
+        event.datetime = new Date(event.datetime);
+      } else if (!(event.datetime instanceof Date)) {
+        throw new Error(`Invalid datetime: ${event.datetime}`);
+      }
+    }
+
     await this.database.addAndRemovePoints(body);
     this.eventEmitter.emit('gameUpdated', params.id);
     this.logger.log(`Added events to game ${params.id}`);
