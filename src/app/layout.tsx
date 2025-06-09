@@ -28,7 +28,7 @@ export default function RootLayout({
 
     // {{!-- This is the default layout for all pages. Things like the header, footer,
     // and stylesheets are all contained in this file. --}}
-    <html lang="en" data-bs-theme="auto" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
 
       <head>
 
@@ -41,7 +41,7 @@ export default function RootLayout({
 
         <link rel="preconnect" href="https://fonts.googleapis.com"></link>
         <link rel="preconnect" href="https://fonts.gstatic.com" ></link>
-        <meta name="theme-color" content="#712cf9" />
+        {/* <meta name="theme-color" content="#712cf9" /> */}
         <link
           href="https://fonts.googleapis.com/css2?family=Bangers&family=Caveat:wght@400..700&family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Mea+Culpa&family=Nabla&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap"
           rel="stylesheet"></link>
@@ -132,7 +132,7 @@ export default function RootLayout({
       </head>
 
       <body>
-        <ThemeProvider attribute={"data-bs-theme"} defaultTheme="auto" enableSystem={true} enableColorScheme={true}>
+        <ThemeProvider attribute="data-bs-theme" enableSystem={true} enableColorScheme={true}>
           {/* {{> helpModal}} */}
 
           <div className="container">

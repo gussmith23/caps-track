@@ -59,7 +59,8 @@ export default function ThemeChanger() {
               </svg>
             </button>
           </li >
-          < li >
+          {/* TODO(@gussmith23): implement auto theme */}
+          {/* < li >
             <button type="button" className="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
               aria-pressed="true" onClick={() => { setTheme("auto") }}>
               <svg className="bi me-2 opacity-50" width="1em" height="1em" >
@@ -70,7 +71,7 @@ export default function ThemeChanger() {
                 <use href="#check2" > </use>
               </svg>
             </button>
-          </li >
+          </li > */}
         </ul >
       </div >
     </>
