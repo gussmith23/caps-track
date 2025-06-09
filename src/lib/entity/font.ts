@@ -1,10 +1,10 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Font {
 
-  @PrimaryColumn("integer")
-  id: string
+  @PrimaryGeneratedColumn()
+  id: number 
 
   @Column()
   name: string
@@ -12,7 +12,7 @@ export class Font {
   @Column()
   size?: string
 
-  constructor(id: string, name: string, size?: string) {
+  constructor(id: number, name: string, size?: string) {
     this.id = id;
     this.name = name;
     this.size = size;
