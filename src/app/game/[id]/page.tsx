@@ -1,14 +1,7 @@
 'use server'
 // A nextjs page for a game at the given id, which accesses the database to
 // retrieve the game and player information, and renders the game view.
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { DataSource } from 'typeorm';
-import { Player } from '../../../lib/entity/player';
-import config from '../../../lib/config';
-import { addPoint } from '@/lib/addPoint';
-import { Game as GameEntity } from '@/lib/entity/game';
 import GameComponent from '@/app/game';
-import { AppDataSource } from '@/lib/db';
 
 
 export default async function Page({ params }:
@@ -20,7 +13,7 @@ export default async function Page({ params }:
   const id = (await params).id;
 
   // Get the game from the database
-  const game = await AppDataSource.manager.findOneOrFail(GameEntity, { where: { id } });
+  // const game = await AppDataSource.manager.findOneOrFail(GameEntity, { where: { id } });
 
   return <GameComponent id={id} />
 

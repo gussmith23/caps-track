@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 
 
 
-export default async function Game({ id }: { id: string }) {
+export default function Game({ id }: { id: string }) {
 
-  const [data, setData] = useState(null);
+  const [dataIgnored, setData] = useState(null);
 
   useEffect(() => {
     const eventSource = new EventSource(`/game/${id}/gameUpdated`);

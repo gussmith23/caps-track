@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export class Font {
 
-  @PrimaryColumn("number")
+  @PrimaryColumn("integer")
   id: string
 
   @Column()

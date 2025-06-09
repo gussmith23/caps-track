@@ -2,7 +2,7 @@ import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Game {
-  @PrimaryColumn({ type: "number" })
+  @PrimaryColumn({ type: "integer" })
   id: string;
 
 
