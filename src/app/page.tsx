@@ -56,13 +56,21 @@ export default function Home() {
         player2Component={<PlayerList selectedValue={player2.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer2)} />}
         player3Component={<PlayerList selectedValue={player3.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer3)} />}
         player4Component={<PlayerList selectedValue={player4.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer4)} />} />
-      <p className="text-center">{player1.name} & {player3.name} vs {player2.name} & {player4.name} </p>
+      <form action="/newGame" method="post">
+        <p className="text-center">{player1.name} & {player3.name} vs {player2.name} & {player4.name} </p>
+        <input type="hidden" name="player1id" value={player1.id} />
+        <input type="hidden" name="player2id" value={player2.id} />
+        <input type="hidden" name="player3id" value={player3.id} />
+        <input type="hidden" name="player4id" value={player4.id} />
+        <button type="submit" className="btn btn-primary" disabled={isPending} >
+          New Game </button>
+      </form>
     </div>
 
-    <div className="container">
-      <NewGame players={playerList} />
+    {/* <div className="container"> */}
+    {/* <NewGame players={playerList} /> */}
 
-      {/* {{ #if activeGameIds.length }}
+    {/* {{ #if activeGameIds.length }}
       <h2>Active Games</h2>
       <ul>
         {{ #each activeGameIds }}
@@ -103,7 +111,7 @@ export default function Home() {
         {{/ each}}
       </ul>
       {{/if}} */}
-    </div>
+    {/* </div> */}
   </>
   );
 }
