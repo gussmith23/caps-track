@@ -1,15 +1,66 @@
+"use client";
 import { AppDataSource } from "@/lib/db";
-import { NewGame } from "./newGame";
+import { NewGame } from "../components/newGame";
 import { Player } from "@/lib/entity/player";
+import { GameGrid } from "@/components/gameGrid";
+import { useEffect, useState, useTransition } from "react";
+import { getPlayers } from "./actions";
+import { PlayerList } from "@/components/playerList";
 
 
+export default function Home() {
 
 
-export default async function Home() {
-  const players = await AppDataSource.manager.find(Player);
-  return (
+  // Must ensure there's no player with id "player" in the players array/db.
+  let [player1, setPlayer1] = useState({ name: "Player", id: "player" });
+  let [player2, setPlayer2] = useState({ name: "Player", id: "player" });
+  let [player3, setPlayer3] = useState({ name: "Player", id: "player" });
+  let [player4, setPlayer4] = useState({ name: "Player", id: "player" });
+  let [playerList, setPlayerList] = useState<{ id: string, name: string }[]>([]);
+
+  // Function to find a player by ID.
+  let findPlayerById = (id: string) => {
+    return playerList.find((p) => p.id === id);
+  };
+  // Function to create a setter for a player by ID.
+  let makeSetPlayerById = (setPlayer: (player: { name: string, id: string }) => void) => {
+    return (id: string) => {
+      let player = findPlayerById(id);
+      if (player) {
+        setPlayer(player);
+      }
+    };
+  };
+
+  let [isPending, startTransition] = useTransition();
+
+  // TODO(@gussmith23): useEffect is bad; should also have a cleanup function.
+  useEffect(() => {
+    startTransition(async () => {
+      const players = JSON.parse(await getPlayers());
+      let playerList = players.map((p: Player) => {
+        return { id: p.id.toString(), name: p.name };
+      });
+      setPlayerList(playerList);
+    });
+  },
+    // This arg is important to prevent infinite loop.
+    []);
+
+
+  return (<>
     <div className="container">
-      <NewGame players={players.map(v => { return { id: v.id.toString(), name: v.name } })} />
+      <h2>New Game</h2>
+      <GameGrid
+        player1Component={<PlayerList selectedValue={player1.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer1)} />}
+        player2Component={<PlayerList selectedValue={player2.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer2)} />}
+        player3Component={<PlayerList selectedValue={player3.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer3)} />}
+        player4Component={<PlayerList selectedValue={player4.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer4)} />} />
+      <p className="text-center">{player1.name} & {player3.name} vs {player2.name} & {player4.name} </p>
+    </div>
+
+    <div className="container">
+      <NewGame players={playerList} />
 
       {/* {{ #if activeGameIds.length }}
       <h2>Active Games</h2>
@@ -53,5 +104,6 @@ export default async function Home() {
       </ul>
       {{/if}} */}
     </div>
+  </>
   );
 }

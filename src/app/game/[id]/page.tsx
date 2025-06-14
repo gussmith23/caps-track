@@ -1,7 +1,7 @@
 'use server'
 // A nextjs page for a game at the given id, which accesses the database to
 // retrieve the game and player information, and renders the game view.
-import GameComponent from '@/app/game';
+import GameComponent from '@/components/game';
 
 
 export default async function Page({ params }:

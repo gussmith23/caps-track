@@ -30,12 +30,12 @@ export function NewGame({
             <div className="col d-none d-sm-block">
             </div>
             <div className="col">
-              <PlayerList players={players} setPlayer={setPlayer2} />
+              <PlayerList players={players} setPlayerId={setPlayer2} />
             </div>
             <div className="col">
             </div>
             <div className="col">
-              <PlayerList players={players} setPlayer={setPlayer3} />
+              <PlayerList players={players} setPlayerId={setPlayer3} />
             </div>
             <div className="col d-none d-sm-block">
             </div>
@@ -59,12 +59,12 @@ export function NewGame({
             <div className="col d-none d-sm-block">
             </div>
             <div className="col">
-              <PlayerList players={players} setPlayer={setPlayer4} />
+              <PlayerList players={players} setPlayerId={setPlayer4} />
             </div>
             <div className="col">
             </div>
             <div className="col">
-              <PlayerList players={players} setPlayer={setPlayer1} />
+              <PlayerList players={players} setPlayerId={setPlayer1} />
             </div>
             <div className="col d-none d-sm-block">
             </div>
