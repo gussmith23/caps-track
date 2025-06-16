@@ -1,27 +1,27 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Player } from "./player";
+import { Point } from "./point";
 
 @Entity()
 export class Game {
   @PrimaryGeneratedColumn({ type: "integer" })
-  id: string;
+  id!: string;
 
 
-  // @OneToMany()
-  // players: Player[];
+  @ManyToMany("Player")
+  @JoinTable()
+  players!: Player[];
+
+  @OneToMany(() => Point, point => point.game)
+  points!: Point[];
 
   @Column({ type: "timestamp with time zone" })
-  beganAt: Date;
+  beganAt!: Date;
 
   @Column({ type: "timestamp with time zone", nullable: true })
   endedAt?: Date;
 
-  @Column()
+  @Column({ nullable: true })
   name?: string;
 
-  constructor(id: string, beganAt: Date, endedAt?: Date, name?: string) {
-    this.id = id;
-    this.beganAt = beganAt;
-    this.endedAt = endedAt;
-    this.name = name;
-  }
 }
