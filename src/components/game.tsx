@@ -15,11 +15,8 @@ export default function Game({ id }: { id: string }) {
 
   useEffect(() => {
     const eventSource = new EventSource(`/game/${id}/gameUpdated`);
-    // const eventSource = new EventSource(`/gameUpdated`);
     eventSource.onmessage = ({ data }) => {
-      console.log("Received game update via SSE");
-      console.log(data);
-      // setGame(JSON.parse(data));
+      setGame(JSON.parse(data));
     };
     return () => {
       eventSource.close();

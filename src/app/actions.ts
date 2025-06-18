@@ -27,7 +27,7 @@ export async function addPointToGame(gameId: string, playerId: string) {
   const gameRepository = AppDataSource.getRepository(Game);
   const game = await gameRepository.findOneOrFail({
     where: { id: gameId },
-    relations: { players: true }
+    relations: { players: true, points: true }
   });
 
   const playerRepository = AppDataSource.getRepository(Player);
