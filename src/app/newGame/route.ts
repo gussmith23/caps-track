@@ -1,13 +1,9 @@
 import { AppDataSource } from '@/lib/db';
 import { Game } from '@/lib/entity/game';
 import { Player } from '@/lib/entity/player';
-import { get } from 'http';
-import type { NextApiRequest, NextApiResponse } from 'next'
 
 export async function POST(req: Request) {
-  console.log('POST request received');
   const body = await req.formData();
-  console.log('Request body:', body);
 
   // Function to get id or fail.
   const getIdOrFail = (key: string): number => {

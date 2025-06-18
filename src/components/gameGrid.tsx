@@ -35,8 +35,6 @@ export function GameGrid({
   let [widthStrHorizontal, widthStrVertical] = widthStrs;
   let maxWidth = horizontal ? widthStrHorizontal : widthStrVertical;
 
-  console.log(playerComponentsOrdering);
-
   return (
     <div className="container text-center">
       <button className="btn btn-primary mb-3" onClick={() => {

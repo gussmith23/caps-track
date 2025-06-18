@@ -15,13 +15,16 @@ export default function Game({ id }: { id: string }) {
 
   useEffect(() => {
     const eventSource = new EventSource(`/game/${id}/gameUpdated`);
+    // const eventSource = new EventSource(`/gameUpdated`);
     eventSource.onmessage = ({ data }) => {
-      setGame(JSON.parse(data));
+      console.log("Received game update via SSE");
+      console.log(data);
+      // setGame(JSON.parse(data));
     };
     return () => {
       eventSource.close();
     };
-  });
+  }, [id]);
 
   const fetchGame = async () => {
     setGame(JSON.parse(await getGame(id)));
@@ -44,7 +47,8 @@ export default function Game({ id }: { id: string }) {
           }
           <button className="btn btn-primary btn-sm" onClick={async () => {
             await addPointToGame(id, player.id.toString());
-            fetchGame().catch(console.error);
+            // This forces reload of game; trying to handle with SSE instead.
+            // fetchGame().catch(console.error);
           }}>
             +
           </button>

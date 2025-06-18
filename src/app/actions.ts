@@ -4,8 +4,7 @@ import { AppDataSource } from "@/lib/db";
 import { Game } from "@/lib/entity/game";
 import { Player } from "@/lib/entity/player";
 import { Point } from "@/lib/entity/point";
-import App from "next/app";
-import { P } from "pino";
+import { broadcastGameUpdate } from "./game/[id]/gameUpdated/route";
 
 // Returns json string.
 // TODO(@gussmith23): I don't know how to type this. I get an error if I do str.
@@ -35,13 +34,15 @@ export async function addPointToGame(gameId: string, playerId: string) {
   const playerIdNumber = Number(playerId);
   const player = await playerRepository.findOneByOrFail({ id: playerIdNumber });
 
-  console.log("addPointToGame: ", { gameId, playerId, game, player });
   // Add point
   await AppDataSource.manager.insert(Point, {
     game: game,
     player: player,
     datetime: new Date(),
   });
+
+  // Notify clients of game update.
+  await broadcastGameUpdate(game);
 }
 
 
