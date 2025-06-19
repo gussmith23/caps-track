@@ -1,7 +1,7 @@
 "use server";
 
 import { AppDataSource } from "@/lib/db";
-import { Game } from "@/lib/entity/game";
+import { GameEntity } from "@/lib/entity/game";
 import { Player } from "@/lib/entity/player";
 import { Point } from "@/lib/entity/point";
 import { broadcastGameUpdate } from "./game/[id]/gameUpdated/route";
@@ -15,7 +15,7 @@ export async function getPlayers() {
 }
 
 export async function getGame(id: string) {
-  let gameRepository = AppDataSource.getRepository(Game);
+  let gameRepository = AppDataSource.getRepository(GameEntity);
   return await gameRepository
     .findOneOrFail({
       where: {
@@ -27,7 +27,7 @@ export async function getGame(id: string) {
 }
 
 export async function addPointToGame(gameId: string, playerId: string) {
-  const gameRepository = AppDataSource.getRepository(Game);
+  const gameRepository = AppDataSource.getRepository(GameEntity);
   const game = await gameRepository.findOneOrFail({
     where: { id: gameId },
     relations: { players: true, points: true },

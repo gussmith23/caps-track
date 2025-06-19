@@ -1,5 +1,5 @@
 import { AppDataSource } from "@/lib/db";
-import { Game } from "@/lib/entity/game";
+import { GameEntity } from "@/lib/entity/game";
 import { Player } from "@/lib/entity/player";
 
 export async function POST(req: Request) {
@@ -37,8 +37,8 @@ export async function POST(req: Request) {
     id: player4Id,
   });
 
-  const gameRepository = AppDataSource.getRepository(Game);
-  const result = await AppDataSource.manager.insert(Game, {
+  const gameRepository = AppDataSource.getRepository(GameEntity);
+  const result = await AppDataSource.manager.insert(GameEntity, {
     beganAt: new Date(),
   });
 

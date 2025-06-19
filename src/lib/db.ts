@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { Font } from "./entity/font";
 import { Point } from "./entity/point";
-import { Game } from "./entity/game";
+import { GameEntity } from "./entity/game";
 import { Player } from "./entity/player";
 import { Item } from "./entity/item";
 import config from "./config";
@@ -14,7 +14,7 @@ const AppDataSource = new DataSource({
   username: config.dbUsername,
   password: config.dbPassword,
   database: config.dbName,
-  entities: [Point, Font, Game, Player, Item],
+  entities: [Point, Font, GameEntity, Player, Item],
   synchronize: true,
   logging: true,
 });

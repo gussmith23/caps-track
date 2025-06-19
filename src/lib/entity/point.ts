@@ -1,24 +1,20 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Game } from "./game";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Player } from "./player";
+
+export type PointObject = {
+  id: number;
+  game: "GameObject";
+  player: "PlayerObject";
+  datetime: Date;
+};
 
 @Entity()
 export class Point {
   @PrimaryGeneratedColumn({ type: "integer" })
   public id: number;
 
-  @ManyToOne("Game", (game) => game.points)
-  public game: Game; // Placeholder for Game entity, should be replaced with actual type
+  @ManyToOne("GameEntity", (game: "GameEntity") => game.points)
+  public game: "GameEntity"; // Placeholder for Game entity, should be replaced with actual type
 
   @ManyToOne("Player", {
     eager: true,
@@ -27,7 +23,7 @@ export class Point {
 
   @Column({ type: "timestamp with time zone" })
   public datetime: Date;
-  constructor(id: number, game: Game, player: Player, datetime: Date) {
+  constructor(id: number, game: GameEntity, player: Player, datetime: Date) {
     this.id = id;
     this.game = game;
     this.player = player;

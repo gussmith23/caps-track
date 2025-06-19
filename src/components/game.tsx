@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { GameGrid } from "./gameGrid";
 import { Player } from "@/lib/entity/player";
 import { addPointToGame, getGame, getPointsForGame } from "@/app/actions";
-import { Game as GameEntity } from "@/lib/entity/game";
+import { GameEntity as GameEntity, GameObject } from "@/lib/entity/game";
 
 export default function Game({ id }: { id: string }) {
   // const [dataIgnored, setData] = useState(null);
 
-  let [game, setGame] = useState(null);
+  let [game, setGame]: [GameObject | null, any] = useState<GameObject | null>(
+    null,
+  );
 
   useEffect(() => {
     const eventSource = new EventSource(`/game/${id}/gameUpdated`);
@@ -104,10 +106,19 @@ export default function Game({ id }: { id: string }) {
 // GameEntities, but not actually a method of GameEntity. This is because it's
 // used in the client code and not in the server code. It would be nice to
 // define clean deserialization and then define this as a method of GameEntity.
-function getScore(game: {
-  players: { id: string }[];
-  points: { player: { id: string } }[];
-}): [[number, number], [number, number, number, number]] {
+function getScore(
+  game: GameObject,
+): [[number, number], [number, number, number, number]] {
+  if (game.players == null) {
+    throw new Error(
+      "Game.getScore: Game is missing players: " + JSON.stringify(game),
+    );
+  }
+  if (game.points == null) {
+    throw new Error(
+      "Game.getScore: Game is missing points: " + JSON.stringify(game),
+    );
+  }
   const team1Score = game.points.filter(
     (point) =>
       point.player.id === game.players[0].id ||

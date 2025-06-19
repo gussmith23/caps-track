@@ -11,8 +11,17 @@ import {
 import { Player } from "./player";
 import { Point } from "./point";
 
+export type GameObject = {
+  id: string;
+  players?: { id: string }[];
+  points?: "PointObject"[];
+  beganAt: Date;
+  endedAt?: Date;
+  name?: string;
+};
+
 @Entity()
-export class Game {
+export class GameEntity {
   @PrimaryGeneratedColumn({ type: "integer" })
   id!: string;
 
