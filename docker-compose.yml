@@ -7,8 +7,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-    volumes:
-      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
   admin:
     image: adminer:latest
     ports:
