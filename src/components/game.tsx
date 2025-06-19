@@ -1,6 +1,12 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  PointerEvent,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { GameGrid } from "./gameGrid";
 import { PlayerObject } from "@/lib/entity/player";
 import { addPointToGame, getGame } from "@/app/actions";
@@ -8,6 +14,8 @@ import { GameObject } from "@/lib/entity/game";
 
 export default function Game({ id }: { id: string }) {
   // const [dataIgnored, setData] = useState(null);
+
+  const debug = true; // Set to true to show canvas border, among other things.
 
   const [game, setGame]: [
     GameObject | null,
@@ -38,8 +46,47 @@ export default function Game({ id }: { id: string }) {
     [id],
   );
 
+  // Players swiped, when swipe action is occurring. Null when no swipe is
+  // occurring.
+  let playersSwiped: PlayerObject[] | null = null;
+
+  // pointer move function draws a line as the pointer moves.
+  function pointerMove(e: PointerEvent<HTMLDivElement>) {
+    if (playersSwiped == null) {
+      return;
+    }
+
+    const canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+    const bx = canvas.getBoundingClientRect();
+    let x = e.clientX - bx.left;
+    const y = e.clientY - bx.top;
+    // Copilot suggested this fix for scaling -- i don't quite understand it,
+    // but it seems to work.
+    x = x * (canvas.width / bx.width);
+
+    // If playersSwiped is not null, then we are swiping.
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      console.error("Canvas context not found");
+      return;
+    }
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    // Get the canvas relative position.
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 1, y + 1); // Draw a small line to show the pointer movement.
+    ctx.stroke();
+
+    // Draw a circle around the pointer.
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = "black";
+    ctx.fill();
+    ctx.closePath();
+  }
+
   function playerBox({ player }: { player: PlayerObject }) {
-    console.log("Rendering playerBox for", player);
     return (
       <>
         {player ? (
@@ -47,6 +94,131 @@ export default function Game({ id }: { id: string }) {
             {player.name}
             <button
               className="btn btn-primary btn-sm"
+              onPointerOver={() => {
+                console.log(
+                  "Pointer over on button for player",
+                  player.name,
+                  "with id",
+                  player.id,
+                );
+                // If playersSwiped is not null, we're swiping; add player to
+                // playersSwiped.
+                if (playersSwiped != null) {
+                  // Add player to playersSwiped.
+                  playersSwiped.push(player);
+                  console.log("Added player to playersSwiped", playersSwiped);
+                }
+              }}
+              onPointerDown={(e: PointerEvent<HTMLElement>) => {
+                //
+                e.target.releasePointerCapture(e.pointerId);
+
+                console.log(
+                  "Pointer down on button for player",
+                  player.name,
+                  "with id",
+                  player.id,
+                );
+
+                // playersSwiped should be null as no swipe should be occurring.
+                if (playersSwiped != null) {
+                  console.warn(
+                    "Pointer down on button for player",
+                    player.name,
+                    "but playersSwiped is not null.",
+                  );
+
+                  return;
+                }
+
+                // Start swipe action.
+                playersSwiped = [player];
+
+                // // Add listener for pointer move to add players to swipe.
+                // const onPointerMove = (e: PointerEvent) => {
+                //   console.log(
+                //     "Pointer move on button for player",
+                //     player.name,
+                //     "with id",
+                //     player.id,
+                //   );
+
+                //   // If playersSwiped is null, then we are not swiping.
+                //   if (playersSwiped == null) {
+                //     console.warn(
+                //       "Pointer move on button for player",
+                //       player.name,
+                //       "but playersSwiped is null.",
+                //     );
+                //   }
+
+                // }
+                // const onPointerUp = async (e: PointerEvent) => {
+                //   console.log(
+                //     "Pointer up on button for player",
+                //     player.name,
+                //     "with id",
+                //     player.id,
+                //   );
+
+                //   // If playersSwiped is null, then we are not swiping.
+                //   if (playersSwiped == null) {
+                //     console.warn(
+                //       "Pointer up on button for player",
+                //       player.name,
+                //       "but playersSwiped is null.",
+                //     );
+                //     return;
+                //   }
+
+                //   // Remove listeners.
+                //   document.removeEventListener("pointermove", onPointerMove);
+                //   document.removeEventListener("pointerup", onPointerUp);
+
+                //   // Add points to game for all players in swipe.
+                //   for (const p of playersSwiped) {
+                //     await addPointToGame(id, p.id.toString());
+                //   }
+                //   // Reset playersSwiped.
+
+                //   playersSwiped = null;
+                // }
+                // // Add listeners for pointer move and pointer up.
+                // document.addEventListener("pointermove", onPointerMove);
+                // document.addEventListener("pointerup", onPointerUp);
+
+                document.addEventListener(
+                  "pointerup",
+                  async () => {
+                    // If playersSwiped is null, then we are not swiping.
+                    if (playersSwiped == null) {
+                      return;
+                    }
+
+                    const completedPlayersSwiped = playersSwiped;
+                    playersSwiped = null; // Reset playersSwiped.
+
+                    // Clear the canvas.
+                    const canvas = document.getElementById(
+                      "gameCanvas",
+                    ) as HTMLCanvasElement;
+                    const ctx = canvas.getContext("2d");
+                    if (!ctx) {
+                      console.error("Canvas context not found");
+                      return;
+                    }
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Add points to game for all players in swipe.
+                    await Promise.all(
+                      completedPlayersSwiped.map((p) => {
+                        return addPointToGame(id, p.id.toString());
+                      }),
+                    );
+                  },
+                  { once: true },
+                );
+              }}
               onClick={async () => {
                 await addPointToGame(id, player.id.toString());
                 // This forces reload of game; trying to handle with SSE instead.
@@ -79,14 +251,35 @@ export default function Game({ id }: { id: string }) {
 
   return (
     <>
-      {/* Render grid only when not isPending */}
       {game && (
-        <GameGrid
-          player1Component={playerBox({ player: game.players[0] })}
-          player2Component={playerBox({ player: game.players[1] })}
-          player3Component={playerBox({ player: game.players[2] })}
-          player4Component={playerBox({ player: game.players[3] })}
-        />
+        <div
+          // have to put this on the div and not the canvas, as we disabled
+          // pointer events on the canvas
+          onPointerMove={pointerMove}
+          className="container"
+          style={{
+            position: "relative",
+            touchAction: "none",
+          }}
+        >
+          <canvas
+            id="gameCanvas"
+            style={{
+              touchAction: "none",
+              pointerEvents: "none",
+              border: debug ? "1px solid black" : "none",
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+            }}
+          ></canvas>
+          <GameGrid
+            player1Component={playerBox({ player: game.players[0] })}
+            player2Component={playerBox({ player: game.players[1] })}
+            player3Component={playerBox({ player: game.players[2] })}
+            player4Component={playerBox({ player: game.players[3] })}
+          />
+        </div>
       )}
       {game && (
         <>
