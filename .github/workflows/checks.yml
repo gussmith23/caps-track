@@ -14,9 +14,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm install
-      - name: Prettier Action
-        uses: creyD/prettier_action@v4.6
-        with:
-          prettier_options: --check
-          dry: true
-          no_commit: true
+      - run: npx prettier --check .
