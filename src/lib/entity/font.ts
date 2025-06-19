@@ -2,15 +2,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Font {
-
   @PrimaryGeneratedColumn()
-  id: number 
+  id: number;
 
   @Column()
-  name: string
+  name: string;
 
   @Column()
-  size?: string
+  size?: string;
 
   constructor(id: number, name: string, size?: string) {
     this.id = id;
@@ -18,5 +17,3 @@ export class Font {
     this.size = size;
   }
 }
-
-

@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-type Location = 'hat' | 'left' | 'right';
+type Location = "hat" | "left" | "right";
 
 @Entity()
 export class Item {
@@ -18,7 +18,7 @@ export class Item {
 
   @Column({
     type: "enum",
-    enum: ['hat', 'left', 'right'],
+    enum: ["hat", "left", "right"],
   })
   location: Location;
 

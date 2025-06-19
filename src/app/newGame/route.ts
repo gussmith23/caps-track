@@ -1,6 +1,6 @@
-import { AppDataSource } from '@/lib/db';
-import { Game } from '@/lib/entity/game';
-import { Player } from '@/lib/entity/player';
+import { AppDataSource } from "@/lib/db";
+import { Game } from "@/lib/entity/game";
+import { Player } from "@/lib/entity/player";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -19,19 +19,27 @@ export async function POST(req: Request) {
   };
 
   // Parse player IDs from the form data.
-  const player1Id = getIdOrFail('player1id');
-  const player2Id = getIdOrFail('player2id');
-  const player3Id = getIdOrFail('player3id');
-  const player4Id = getIdOrFail('player4id');
+  const player1Id = getIdOrFail("player1id");
+  const player2Id = getIdOrFail("player2id");
+  const player3Id = getIdOrFail("player3id");
+  const player4Id = getIdOrFail("player4id");
 
-  const player1 = await AppDataSource.manager.findOneByOrFail(Player, { id: player1Id });
-  const player2 = await AppDataSource.manager.findOneByOrFail(Player, { id: player2Id });
-  const player3 = await AppDataSource.manager.findOneByOrFail(Player, { id: player3Id });
-  const player4 = await AppDataSource.manager.findOneByOrFail(Player, { id: player4Id });
+  const player1 = await AppDataSource.manager.findOneByOrFail(Player, {
+    id: player1Id,
+  });
+  const player2 = await AppDataSource.manager.findOneByOrFail(Player, {
+    id: player2Id,
+  });
+  const player3 = await AppDataSource.manager.findOneByOrFail(Player, {
+    id: player3Id,
+  });
+  const player4 = await AppDataSource.manager.findOneByOrFail(Player, {
+    id: player4Id,
+  });
 
   const gameRepository = AppDataSource.getRepository(Game);
   const result = await AppDataSource.manager.insert(Game, {
-    beganAt: new Date()
+    beganAt: new Date(),
   });
 
   const game = await gameRepository.findOneByOrFail({
@@ -46,13 +54,12 @@ export async function POST(req: Request) {
   return new Response(null, {
     status: 303,
     headers: {
-      'Location': url.toString(),
+      Location: url.toString(),
     },
   });
 }
 
 export async function GET(req: Request) {
   // GET not allowed.
-  return new Response('Method Not Allowed', { status: 405 });
+  return new Response("Method Not Allowed", { status: 405 });
 }
-

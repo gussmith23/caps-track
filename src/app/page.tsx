@@ -7,23 +7,24 @@ import { useEffect, useState, useTransition } from "react";
 import { getPlayers } from "./actions";
 import { PlayerList } from "@/components/playerList";
 
-
 export default function Home() {
-
-
   // Must ensure there's no player with id "player" in the players array/db.
   let [player1, setPlayer1] = useState({ name: "Player", id: "player" });
   let [player2, setPlayer2] = useState({ name: "Player", id: "player" });
   let [player3, setPlayer3] = useState({ name: "Player", id: "player" });
   let [player4, setPlayer4] = useState({ name: "Player", id: "player" });
-  let [playerList, setPlayerList] = useState<{ id: string, name: string }[]>([]);
+  let [playerList, setPlayerList] = useState<{ id: string; name: string }[]>(
+    [],
+  );
 
   // Function to find a player by ID.
   let findPlayerById = (id: string) => {
     return playerList.find((p) => p.id === id);
   };
   // Function to create a setter for a player by ID.
-  let makeSetPlayerById = (setPlayer: (player: { name: string, id: string }) => void) => {
+  let makeSetPlayerById = (
+    setPlayer: (player: { name: string; id: string }) => void,
+  ) => {
     return (id: string) => {
       let player = findPlayerById(id);
       if (player) {
@@ -35,42 +36,77 @@ export default function Home() {
   let [isPending, startTransition] = useTransition();
 
   // TODO(@gussmith23): useEffect is bad; should also have a cleanup function.
-  useEffect(() => {
-    startTransition(async () => {
-      const players = JSON.parse(await getPlayers());
-      let playerList = players.map((p: Player) => {
-        return { id: p.id.toString(), name: p.name };
+  useEffect(
+    () => {
+      startTransition(async () => {
+        const players = JSON.parse(await getPlayers());
+        let playerList = players.map((p: Player) => {
+          return { id: p.id.toString(), name: p.name };
+        });
+        setPlayerList(playerList);
       });
-      setPlayerList(playerList);
-    });
-  },
+    },
     // This arg is important to prevent infinite loop.
-    []);
+    [],
+  );
 
+  return (
+    <>
+      <div className="container">
+        <h2>New Game</h2>
+        <GameGrid
+          player1Component={
+            <PlayerList
+              selectedValue={player1.id}
+              players={playerList}
+              setPlayerId={makeSetPlayerById(setPlayer1)}
+            />
+          }
+          player2Component={
+            <PlayerList
+              selectedValue={player2.id}
+              players={playerList}
+              setPlayerId={makeSetPlayerById(setPlayer2)}
+            />
+          }
+          player3Component={
+            <PlayerList
+              selectedValue={player3.id}
+              players={playerList}
+              setPlayerId={makeSetPlayerById(setPlayer3)}
+            />
+          }
+          player4Component={
+            <PlayerList
+              selectedValue={player4.id}
+              players={playerList}
+              setPlayerId={makeSetPlayerById(setPlayer4)}
+            />
+          }
+        />
+        <form action="/newGame" method="post">
+          <p className="text-center">
+            {player1.name} & {player3.name} vs {player2.name} &{" "}
+            {player4.name}{" "}
+          </p>
+          <input type="hidden" name="player1id" value={player1.id} />
+          <input type="hidden" name="player2id" value={player2.id} />
+          <input type="hidden" name="player3id" value={player3.id} />
+          <input type="hidden" name="player4id" value={player4.id} />
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isPending}
+          >
+            New Game{" "}
+          </button>
+        </form>
+      </div>
 
-  return (<>
-    <div className="container">
-      <h2>New Game</h2>
-      <GameGrid
-        player1Component={<PlayerList selectedValue={player1.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer1)} />}
-        player2Component={<PlayerList selectedValue={player2.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer2)} />}
-        player3Component={<PlayerList selectedValue={player3.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer3)} />}
-        player4Component={<PlayerList selectedValue={player4.id} players={playerList} setPlayerId={makeSetPlayerById(setPlayer4)} />} />
-      <form action="/newGame" method="post">
-        <p className="text-center">{player1.name} & {player3.name} vs {player2.name} & {player4.name} </p>
-        <input type="hidden" name="player1id" value={player1.id} />
-        <input type="hidden" name="player2id" value={player2.id} />
-        <input type="hidden" name="player3id" value={player3.id} />
-        <input type="hidden" name="player4id" value={player4.id} />
-        <button type="submit" className="btn btn-primary" disabled={isPending} >
-          New Game </button>
-      </form>
-    </div>
+      {/* <div className="container"> */}
+      {/* <NewGame players={playerList} /> */}
 
-    {/* <div className="container"> */}
-    {/* <NewGame players={playerList} /> */}
-
-    {/* {{ #if activeGameIds.length }}
+      {/* {{ #if activeGameIds.length }}
       <h2>Active Games</h2>
       <ul>
         {{ #each activeGameIds }}
@@ -111,7 +147,7 @@ export default function Home() {
         {{/ each}}
       </ul>
       {{/if}} */}
-    {/* </div> */}
-  </>
+      {/* </div> */}
+    </>
   );
 }

@@ -1,4 +1,14 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Font } from "./font";
 import { Item } from "./item";
 
@@ -34,7 +44,7 @@ export class Player {
     font?: Font,
     fontWeight?: string,
     unlockedItems?: Item[],
-    equippedItems?: Item[]
+    equippedItems?: Item[],
   ) {
     this.id = id;
     this.name = name;

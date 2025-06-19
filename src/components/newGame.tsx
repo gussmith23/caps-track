@@ -1,13 +1,13 @@
-
-'use client';
+"use client";
 import { useState } from "react";
 import { PlayerList } from "./playerList";
 import { Player } from "@/lib/entity/player";
 
 export function NewGame({
-  players
-}: { players: { id: string, name: string }[] }) {
-
+  players,
+}: {
+  players: { id: string; name: string }[];
+}) {
   const [player1, setPlayer1] = useState("");
   const [player2, setPlayer2] = useState("");
   const [player3, setPlayer3] = useState("");
@@ -27,47 +27,33 @@ export function NewGame({
               ); */}
           </script>
           <div className="row">
-            <div className="col d-none d-sm-block">
-            </div>
+            <div className="col d-none d-sm-block"></div>
             <div className="col">
               <PlayerList players={players} setPlayerId={setPlayer2} />
             </div>
-            <div className="col">
-            </div>
+            <div className="col"></div>
             <div className="col">
               <PlayerList players={players} setPlayerId={setPlayer3} />
             </div>
-            <div className="col d-none d-sm-block">
-            </div>
+            <div className="col d-none d-sm-block"></div>
           </div>
           <div className="row">
-            <div className="col d-none d-sm-block">
-            </div>
-            <div className="col fs-1">
-              🍺
-            </div>
-            <div className="col fs-1">
-              ↔
-            </div>
-            <div className="col fs-1">
-              🍺
-            </div>
-            <div className="col d-none d-sm-block">
-            </div>
+            <div className="col d-none d-sm-block"></div>
+            <div className="col fs-1">🍺</div>
+            <div className="col fs-1">↔</div>
+            <div className="col fs-1">🍺</div>
+            <div className="col d-none d-sm-block"></div>
           </div>
           <div className="row">
-            <div className="col d-none d-sm-block">
-            </div>
+            <div className="col d-none d-sm-block"></div>
             <div className="col">
               <PlayerList players={players} setPlayerId={setPlayer4} />
             </div>
-            <div className="col">
-            </div>
+            <div className="col"></div>
             <div className="col">
               <PlayerList players={players} setPlayerId={setPlayer1} />
             </div>
-            <div className="col d-none d-sm-block">
-            </div>
+            <div className="col d-none d-sm-block"></div>
           </div>
           <div className="row">
             <p id="gamePreview" className="text-center">
@@ -81,5 +67,6 @@ export function NewGame({
           </div>
         </form>
       </div>
-    </>);
+    </>
+  );
 }

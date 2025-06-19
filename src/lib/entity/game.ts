@@ -1,4 +1,13 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Player } from "./player";
 import { Point } from "./point";
 
@@ -7,12 +16,11 @@ export class Game {
   @PrimaryGeneratedColumn({ type: "integer" })
   id!: string;
 
-
   @ManyToMany("Player")
   @JoinTable()
   players!: Player[];
 
-  @OneToMany(() => Point, point => point.game)
+  @OneToMany(() => Point, (point) => point.game)
   points!: Point[];
 
   @Column({ type: "timestamp with time zone" })
@@ -23,5 +31,4 @@ export class Game {
 
   @Column({ nullable: true })
   name?: string;
-
 }

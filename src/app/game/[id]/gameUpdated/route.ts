@@ -1,6 +1,6 @@
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 // This is required to enable streaming
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import { Game } from "@/lib/entity/game";
 import { Channel, createResponse } from "better-sse";
@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === "production") {
   channel = new Channel();
 } else {
   // @ts-ignore
-  if (!(global).channel) {
+  if (!global.channel) {
     // @ts-ignore
     global.channel = new Channel();
   }
