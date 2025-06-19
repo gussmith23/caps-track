@@ -26,13 +26,13 @@ export function GameGrid({
     player4Component,
   ];
   // Initial ordering starting from top left and going clockwise.
-  let [playerComponentsOrdering, setPlayerComponentsOrdering] = useState([
+  const [playerComponentsOrdering, setPlayerComponentsOrdering] = useState([
     0, 1, 2, 3,
   ]);
-  let [horizontal, setHorizontal] = useState(startHorizontal);
+  const [horizontal, setHorizontal] = useState(startHorizontal);
 
-  let [widthStrHorizontal, widthStrVertical] = widthStrs;
-  let maxWidth = horizontal ? widthStrHorizontal : widthStrVertical;
+  const [widthStrHorizontal, widthStrVertical] = widthStrs;
+  const maxWidth = horizontal ? widthStrHorizontal : widthStrVertical;
 
   return (
     <div className="container text-center">
@@ -40,7 +40,7 @@ export function GameGrid({
         className="btn btn-primary mb-3"
         onClick={() => {
           // Rotate the player components
-          let tmp = new Array(4);
+          const tmp = new Array(4);
 
           for (let i = 0; i < 4; i++) {
             // TODO(@gussmith23): magic number (should be number of components to

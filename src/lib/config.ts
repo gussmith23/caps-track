@@ -18,7 +18,7 @@ export type Config = {
   port: number;
 };
 
-let parsedConfig = new Map<string, any>();
+const parsedConfig = new Map<string, any>();
 
 // Port configuration.
 if (!process.env.CAPS_TRACK_PORT) {

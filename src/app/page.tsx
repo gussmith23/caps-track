@@ -9,38 +9,38 @@ import { PlayerList } from "@/components/playerList";
 
 export default function Home() {
   // Must ensure there's no player with id "player" in the players array/db.
-  let [player1, setPlayer1] = useState({ name: "Player", id: "player" });
-  let [player2, setPlayer2] = useState({ name: "Player", id: "player" });
-  let [player3, setPlayer3] = useState({ name: "Player", id: "player" });
-  let [player4, setPlayer4] = useState({ name: "Player", id: "player" });
-  let [playerList, setPlayerList] = useState<{ id: string; name: string }[]>(
+  const [player1, setPlayer1] = useState({ name: "Player", id: "player" });
+  const [player2, setPlayer2] = useState({ name: "Player", id: "player" });
+  const [player3, setPlayer3] = useState({ name: "Player", id: "player" });
+  const [player4, setPlayer4] = useState({ name: "Player", id: "player" });
+  const [playerList, setPlayerList] = useState<{ id: string; name: string }[]>(
     [],
   );
 
   // Function to find a player by ID.
-  let findPlayerById = (id: string) => {
+  const findPlayerById = (id: string) => {
     return playerList.find((p) => p.id === id);
   };
   // Function to create a setter for a player by ID.
-  let makeSetPlayerById = (
+  const makeSetPlayerById = (
     setPlayer: (player: { name: string; id: string }) => void,
   ) => {
     return (id: string) => {
-      let player = findPlayerById(id);
+      const player = findPlayerById(id);
       if (player) {
         setPlayer(player);
       }
     };
   };
 
-  let [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   // TODO(@gussmith23): useEffect is bad; should also have a cleanup function.
   useEffect(
     () => {
       startTransition(async () => {
         const players = JSON.parse(await getPlayers());
-        let playerList = players.map((p: PlayerEntity) => {
+        const playerList = players.map((p: PlayerEntity) => {
           return { id: p.id.toString(), name: p.name };
         });
         setPlayerList(playerList);

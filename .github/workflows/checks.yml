@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  prettier:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,14 +21,14 @@ jobs:
           npx prettier --check .
           echo "prettier_exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
-      
+
       - name: Typescript check
         id: typescript
         run: |
           npx tsc --noEmit
           echo "typescript_exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
-      
+
       - name: ESLint check
         id: eslint
         run: |
@@ -36,7 +36,7 @@ jobs:
           echo "eslint_exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
 
-      - name: Check results 
+      - name: Check results
         # Error if any of the checks failed
         run: |
           exit_code=0

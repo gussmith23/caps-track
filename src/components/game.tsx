@@ -9,7 +9,7 @@ import { GameObject } from "@/lib/entity/game";
 export default function Game({ id }: { id: string }) {
   // const [dataIgnored, setData] = useState(null);
 
-  let [game, setGame]: [GameObject | null, any] = useState<GameObject | null>(
+  const [game, setGame]: [GameObject | null, any] = useState<GameObject | null>(
     null,
   );
 
@@ -62,7 +62,7 @@ export default function Game({ id }: { id: string }) {
     );
   }
 
-  let [
+  const [
     [team1Score, team2Score],
     [player1Score, player2Score, player3Score, player4Score],
   ] = game

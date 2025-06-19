@@ -30,7 +30,7 @@ export async function broadcastGameUpdate(game: Game) {
 }
 
 export async function GET(request: NextRequest, context: any) {
-  let res = createResponse(request, (session) => {
+  const res = createResponse(request, (session) => {
     channel.register(session);
   });
 

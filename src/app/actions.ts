@@ -15,7 +15,7 @@ export async function getPlayers() {
 }
 
 export async function getGame(id: string) {
-  let gameRepository = AppDataSource.getRepository(GameEntity);
+  const gameRepository = AppDataSource.getRepository(GameEntity);
   return await gameRepository
     .findOneOrFail({
       where: {
