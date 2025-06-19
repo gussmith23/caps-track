@@ -61,10 +61,10 @@ export default function Game({ id }: { id: string }) {
     {/* Render grid only when not isPending */}
     {game &&
       <GameGrid
-        player1Component={playerBox({ player: game!.players[0] })}
-        player2Component={playerBox({ player: game!.players[1] })}
-        player3Component={playerBox({ player: game!.players[2] })}
-        player4Component={playerBox({ player: game!.players[3] })}
+      player1Component={playerBox({ player: game.players[0] })}
+      player2Component={playerBox({ player: game.players[1] })}
+      player3Component={playerBox({ player: game.players[2] })}
+      player4Component={playerBox({ player: game.players[3] })}
       />
     }
     {game &&
