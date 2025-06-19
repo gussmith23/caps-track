@@ -9,14 +9,14 @@ import {
 import { type PlayerEntity, type PlayerObject } from "./player";
 import { type PointEntity, type PointObject } from "./point";
 
-export type GameObject = {
+export interface GameObject {
   id: string;
   players?: PlayerObject[];
   points?: PointObject[];
   beganAt: Date;
   endedAt?: Date;
   name?: string;
-};
+}
 
 @Entity({ name: "game" })
 export class GameEntity {

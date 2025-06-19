@@ -48,21 +48,21 @@ export async function addPointToGame(gameId: string, playerId: string) {
   await broadcastGameUpdate(game);
 }
 
-export async function getPointsForGame(gameId: string) {
-  // // Get game.
-  // const gameRepository = AppDataSource.getRepository(Game);
-  // const game = await gameRepository.findOneOrFail({
-  //   where: { id: gameId },
-  //   relations: { players: true }
-  // });
-  // // Get player points.
-  // const playerRepository = AppDataSource.getRepository(Player);
-  // const player1points = await playerRepository.createQueryBuilder("player").
-  // const out = await AppDataSource
-  //   .getRepository(Point)
-  //   .createQueryBuilder("point")
-  //   .select("COUNT(point.playerId)", "count")
-  //   .where("point.gameId = :gameId", { gameId })
-  //   .groupBy("point.playerId").getRawMany();
-  // console.log("getPointsForGame out: ", out);
-}
+// export async function getPointsForGame(gameId: string) {
+//   // // Get game.
+//   // const gameRepository = AppDataSource.getRepository(Game);
+//   // const game = await gameRepository.findOneOrFail({
+//   //   where: { id: gameId },
+//   //   relations: { players: true }
+//   // });
+//   // // Get player points.
+//   // const playerRepository = AppDataSource.getRepository(Player);
+//   // const player1points = await playerRepository.createQueryBuilder("player").
+//   // const out = await AppDataSource
+//   //   .getRepository(Point)
+//   //   .createQueryBuilder("point")
+//   //   .select("COUNT(point.playerId)", "count")
+//   //   .where("point.gameId = :gameId", { gameId })
+//   //   .groupBy("point.playerId").getRawMany();
+//   // console.log("getPointsForGame out: ", out);
+// }

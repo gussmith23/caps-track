@@ -2,12 +2,12 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { PlayerEntity, type PlayerObject } from "./player";
 import { GameEntity, type GameObject } from "./game";
 
-export type PointObject = {
+export interface PointObject {
   id: number;
   game: GameObject;
   player: PlayerObject;
   datetime: Date;
-};
+}
 
 @Entity({ name: "point" })
 export class PointEntity {

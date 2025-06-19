@@ -1,6 +1,4 @@
 "use client";
-import { AppDataSource } from "@/lib/db";
-import { NewGame } from "../components/newGame";
 import { PlayerEntity } from "@/lib/entity/player";
 import { GameGrid } from "@/components/gameGrid";
 import { useEffect, useState, useTransition } from "react";

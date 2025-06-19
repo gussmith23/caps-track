@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes";
 
 export default function ThemeChanger() {
-  const { theme, setTheme } = useTheme();
+  const setTheme = useTheme().setTheme;
   return (
     <>
       <svg xmlns="http://www.w3.org/2000/svg" className="d-none">

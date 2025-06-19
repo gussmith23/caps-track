@@ -10,7 +10,7 @@ import {
 import { FontEntity } from "./font";
 import { Item } from "./item";
 
-export type PlayerObject = {
+export interface PlayerObject {
   id: number;
   name: string;
   nameColor?: string;
@@ -18,7 +18,7 @@ export type PlayerObject = {
   fontWeight?: string;
   unlockedItems?: Item[];
   equippedItem?: Item[];
-};
+}
 
 @Entity({ name: "player" })
 export class PlayerEntity {

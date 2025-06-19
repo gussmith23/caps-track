@@ -9,16 +9,16 @@ config({ path: process.env.CAPS_TRACK_ENV_FILE || ".env" });
 const log = logger.child({ module: "config" });
 
 // Define config type
-export type Config = {
+export interface Config {
   dbHostname: string;
   dbPort: number;
   dbUsername: string;
   dbPassword: string;
   dbName: string;
   port: number;
-};
+}
 
-const parsedConfig = new Map<string, any>();
+const parsedConfig = new Map<string, number | string>();
 
 // Port configuration.
 if (!process.env.CAPS_TRACK_PORT) {

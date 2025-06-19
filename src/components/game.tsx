@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { GameGrid } from "./gameGrid";
 import { PlayerObject } from "@/lib/entity/player";
 import { addPointToGame, getGame } from "@/app/actions";
@@ -9,9 +9,10 @@ import { GameObject } from "@/lib/entity/game";
 export default function Game({ id }: { id: string }) {
   // const [dataIgnored, setData] = useState(null);
 
-  const [game, setGame]: [GameObject | null, any] = useState<GameObject | null>(
-    null,
-  );
+  const [game, setGame]: [
+    GameObject | null,
+    Dispatch<SetStateAction<GameObject | null>>,
+  ] = useState<GameObject | null>(null);
 
   useEffect(() => {
     const eventSource = new EventSource(`/game/${id}/gameUpdated`);
@@ -124,19 +125,19 @@ function getScore(
       "Game.getScore: Game is missing points: " + JSON.stringify(game),
     );
   }
-  const team1Score = game.points.filter(
+  const players = game.players;
+  const points = game.points;
+  const team1Score = points.filter(
     (point) =>
-      point.player.id === game.players![0].id ||
-      point.player.id === game.players![2].id,
+      point.player.id === players[0].id || point.player.id === players[2].id,
   ).length;
-  const team2Score = game.points.filter(
+  const team2Score = points.filter(
     (point) =>
-      point.player.id === game.players![1].id ||
-      point.player.id === game.players![3].id,
+      point.player.id === players[1].id || point.player.id === players[3].id,
   ).length;
 
-  const playerScores = game.players.map((player) => {
-    return game.points!.filter((point) => point.player.id === player.id).length;
+  const playerScores = players.map((player) => {
+    return points.filter((point) => point.player.id === player.id).length;
   });
 
   if (game.players.length !== 4) {
