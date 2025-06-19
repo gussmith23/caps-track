@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { PlayerList } from "./playerList";
-import { Player } from "@/lib/entity/player";
+import { PlayerEntity } from "@/lib/entity/player";
 
 export function NewGame({
   players,

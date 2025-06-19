@@ -7,11 +7,21 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Font } from "./font";
+import { FontEntity } from "./font";
 import { Item } from "./item";
 
-@Entity()
-export class Player {
+export type PlayerObject = {
+  id: number;
+  name: string;
+  nameColor?: string;
+  font?: FontEntity;
+  fontWeight?: string;
+  unlockedItems?: Item[];
+  equippedItem?: Item[];
+};
+
+@Entity({ name: "player" })
+export class PlayerEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -20,9 +30,13 @@ export class Player {
   @Column()
   nameColor?: string;
 
-  @ManyToOne(() => Font, { eager: true, cascade: true, onDelete: "SET NULL" })
+  @ManyToOne(() => FontEntity, {
+    eager: true,
+    cascade: true,
+    onDelete: "SET NULL",
+  })
   @JoinColumn()
-  font?: Font;
+  font?: FontEntity;
 
   @Column()
   fontWeight?: string;
@@ -39,7 +53,7 @@ export class Player {
     id: number,
     name: string,
     nameColor?: string,
-    font?: Font,
+    font?: FontEntity,
     fontWeight?: string,
     unlockedItems?: Item[],
     equippedItems?: Item[],

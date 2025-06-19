@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { GameGrid } from "./gameGrid";
-import { Player } from "@/lib/entity/player";
-import { addPointToGame, getGame, getPointsForGame } from "@/app/actions";
-import { GameEntity as GameEntity, GameObject } from "@/lib/entity/game";
+import { PlayerObject } from "@/lib/entity/player";
+import { addPointToGame, getGame } from "@/app/actions";
+import { GameObject } from "@/lib/entity/game";
 
 export default function Game({ id }: { id: string }) {
   // const [dataIgnored, setData] = useState(null);
@@ -37,7 +37,8 @@ export default function Game({ id }: { id: string }) {
     [id],
   );
 
-  function playerBox({ player }: { player: Player }) {
+  function playerBox({ player }: { player: PlayerObject }) {
+    console.log("Rendering playerBox for", player);
     return (
       <>
         {player ? (
@@ -70,6 +71,10 @@ export default function Game({ id }: { id: string }) {
         [0, 0],
         [0, 0, 0, 0],
       ];
+
+  if (game == null || game.players == null) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
@@ -121,17 +126,17 @@ function getScore(
   }
   const team1Score = game.points.filter(
     (point) =>
-      point.player.id === game.players[0].id ||
-      point.player.id === game.players[2].id,
+      point.player.id === game.players![0].id ||
+      point.player.id === game.players![2].id,
   ).length;
   const team2Score = game.points.filter(
     (point) =>
-      point.player.id === game.players[1].id ||
-      point.player.id === game.players[3].id,
+      point.player.id === game.players![1].id ||
+      point.player.id === game.players![3].id,
   ).length;
 
   const playerScores = game.players.map((player) => {
-    return game.points.filter((point) => point.player.id === player.id).length;
+    return game.points!.filter((point) => point.player.id === player.id).length;
   });
 
   if (game.players.length !== 4) {

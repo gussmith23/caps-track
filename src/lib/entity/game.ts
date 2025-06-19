@@ -3,34 +3,32 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Player } from "./player";
-import { Point } from "./point";
+import { type PlayerEntity, type PlayerObject } from "./player";
+import { type PointEntity, type PointObject } from "./point";
 
 export type GameObject = {
   id: string;
-  players?: { id: string }[];
-  points?: "PointObject"[];
+  players?: PlayerObject[];
+  points?: PointObject[];
   beganAt: Date;
   endedAt?: Date;
   name?: string;
 };
 
-@Entity()
+@Entity({ name: "game" })
 export class GameEntity {
   @PrimaryGeneratedColumn({ type: "integer" })
   id!: string;
 
-  @ManyToMany("Player")
+  @ManyToMany("PlayerEntity")
   @JoinTable()
-  players!: Player[];
+  players!: PlayerEntity[];
 
-  @OneToMany(() => Point, (point) => point.game)
-  points!: Point[];
+  @OneToMany("PointEntity", (point: PointEntity) => point.game)
+  points!: PointEntity[];
 
   @Column({ type: "timestamp with time zone" })
   beganAt!: Date;

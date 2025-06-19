@@ -1,7 +1,7 @@
 "use client";
 import { AppDataSource } from "@/lib/db";
 import { NewGame } from "../components/newGame";
-import { Player } from "@/lib/entity/player";
+import { PlayerEntity } from "@/lib/entity/player";
 import { GameGrid } from "@/components/gameGrid";
 import { useEffect, useState, useTransition } from "react";
 import { getPlayers } from "./actions";
@@ -40,7 +40,7 @@ export default function Home() {
     () => {
       startTransition(async () => {
         const players = JSON.parse(await getPlayers());
-        let playerList = players.map((p: Player) => {
+        let playerList = players.map((p: PlayerEntity) => {
           return { id: p.id.toString(), name: p.name };
         });
         setPlayerList(playerList);

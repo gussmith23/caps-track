@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Font } from "./entity/font";
-import { Point } from "./entity/point";
+import { FontEntity } from "./entity/font";
+import { PointEntity } from "./entity/point";
 import { GameEntity } from "./entity/game";
-import { Player } from "./entity/player";
+import { PlayerEntity } from "./entity/player";
 import { Item } from "./entity/item";
 import config from "./config";
 
@@ -14,7 +14,7 @@ const AppDataSource = new DataSource({
   username: config.dbUsername,
   password: config.dbPassword,
   database: config.dbName,
-  entities: [Point, Font, GameEntity, Player, Item],
+  entities: [PointEntity, FontEntity, GameEntity, PlayerEntity, Item],
   synchronize: true,
   logging: true,
 });

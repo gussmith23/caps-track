@@ -2,15 +2,15 @@
 
 import { AppDataSource } from "@/lib/db";
 import { GameEntity } from "@/lib/entity/game";
-import { Player } from "@/lib/entity/player";
-import { Point } from "@/lib/entity/point";
+import { PlayerEntity } from "@/lib/entity/player";
+import { PointEntity } from "@/lib/entity/point";
 import { broadcastGameUpdate } from "./game/[id]/gameUpdated/route";
 
 // Returns json string.
 // TODO(@gussmith23): I don't know how to type this. I get an error if I do str.
 export async function getPlayers() {
   return await AppDataSource.manager
-    .find(Player)
+    .find(PlayerEntity)
     .then((players) => JSON.stringify(players));
 }
 
@@ -33,12 +33,12 @@ export async function addPointToGame(gameId: string, playerId: string) {
     relations: { players: true, points: true },
   });
 
-  const playerRepository = AppDataSource.getRepository(Player);
+  const playerRepository = AppDataSource.getRepository(PlayerEntity);
   const playerIdNumber = Number(playerId);
   const player = await playerRepository.findOneByOrFail({ id: playerIdNumber });
 
   // Add point
-  await AppDataSource.manager.insert(Point, {
+  await AppDataSource.manager.insert(PointEntity, {
     game: game,
     player: player,
     datetime: new Date(),

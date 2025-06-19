@@ -1,6 +1,6 @@
 import { AppDataSource } from "@/lib/db";
 import { GameEntity } from "@/lib/entity/game";
-import { Player } from "@/lib/entity/player";
+import { PlayerEntity } from "@/lib/entity/player";
 
 export async function POST(req: Request) {
   const body = await req.formData();
@@ -24,16 +24,16 @@ export async function POST(req: Request) {
   const player3Id = getIdOrFail("player3id");
   const player4Id = getIdOrFail("player4id");
 
-  const player1 = await AppDataSource.manager.findOneByOrFail(Player, {
+  const player1 = await AppDataSource.manager.findOneByOrFail(PlayerEntity, {
     id: player1Id,
   });
-  const player2 = await AppDataSource.manager.findOneByOrFail(Player, {
+  const player2 = await AppDataSource.manager.findOneByOrFail(PlayerEntity, {
     id: player2Id,
   });
-  const player3 = await AppDataSource.manager.findOneByOrFail(Player, {
+  const player3 = await AppDataSource.manager.findOneByOrFail(PlayerEntity, {
     id: player3Id,
   });
-  const player4 = await AppDataSource.manager.findOneByOrFail(Player, {
+  const player4 = await AppDataSource.manager.findOneByOrFail(PlayerEntity, {
     id: player4Id,
   });
 

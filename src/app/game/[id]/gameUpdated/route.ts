@@ -2,7 +2,7 @@ export const runtime = "nodejs";
 // This is required to enable streaming
 export const dynamic = "force-dynamic";
 
-import { GameEntity } from "@/lib/entity/game";
+import { Game } from "@/lib/entity/game";
 import { Channel, createResponse } from "better-sse";
 import { NextRequest } from "next/server";
 
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === "production") {
 
 const loadTimestamp = new Date().toISOString();
 
-export async function broadcastGameUpdate(game: GameEntity) {
+export async function broadcastGameUpdate(game: Game) {
   channel.broadcast(game);
 }
 

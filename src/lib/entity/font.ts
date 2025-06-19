@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class Font {
+@Entity({ name: "font" })
+export class FontEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -1,29 +1,35 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Player } from "./player";
+import { PlayerEntity, type PlayerObject } from "./player";
+import { GameEntity, type GameObject } from "./game";
 
 export type PointObject = {
   id: number;
-  game: "GameObject";
-  player: "PlayerObject";
+  game: GameObject;
+  player: PlayerObject;
   datetime: Date;
 };
 
-@Entity()
-export class Point {
+@Entity({ name: "point" })
+export class PointEntity {
   @PrimaryGeneratedColumn({ type: "integer" })
   public id: number;
 
-  @ManyToOne("GameEntity", (game: "GameEntity") => game.points)
-  public game: "GameEntity"; // Placeholder for Game entity, should be replaced with actual type
+  @ManyToOne(() => GameEntity, (game: GameEntity) => game.points)
+  public game: GameEntity;
 
-  @ManyToOne("Player", {
+  @ManyToOne(() => PlayerEntity, {
     eager: true,
   })
-  public player: Player; // Placeholder for Player entity, should be replaced with actual type
+  public player: PlayerEntity; // Placeholder for Player entity, should be replaced with actual type
 
   @Column({ type: "timestamp with time zone" })
   public datetime: Date;
-  constructor(id: number, game: GameEntity, player: Player, datetime: Date) {
+  constructor(
+    id: number,
+    game: GameEntity,
+    player: PlayerEntity,
+    datetime: Date,
+  ) {
     this.id = id;
     this.game = game;
     this.player = player;
