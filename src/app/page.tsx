@@ -2,8 +2,9 @@
 import { PlayerEntity } from "@/lib/entity/player";
 import { GameGrid } from "@/components/gameGrid";
 import { useEffect, useState, useTransition } from "react";
-import { getPlayers } from "./actions";
+import { getGames, getPlayers } from "./actions";
 import { PlayerList } from "@/components/playerList";
+import { GameObject } from "@/lib/entity/game";
 
 export default function Home() {
   // Must ensure there's no player with id "player" in the players array/db.
@@ -47,6 +48,15 @@ export default function Home() {
     // This arg is important to prevent infinite loop.
     [],
   );
+
+  const [games, setGames] = useState<GameObject[]>([]);
+  const [gamesPending, startGamesTransition] = useTransition();
+  useEffect(() => {
+    startGamesTransition(async () => {
+      let games: GameObject[] = JSON.parse(await getGames());
+      setGames(games);
+    });
+  }, []);
 
   return (
     <>
@@ -99,11 +109,40 @@ export default function Home() {
             New Game{" "}
           </button>
         </form>
+
+        <h2>New Player</h2>
+        <form action="/newPlayer" method="post">
+          <input
+            type="text"
+            name="name"
+            placeholder="Player Name"
+            className="form-control"
+            required
+          />
+          <button type="submit" className="btn btn-primary">
+            Add Player
+          </button>
+        </form>
+
+        {/* <div className="container"> */}
+        {/* <NewGame players={playerList} /> */}
+
+        {/* all games */}
+        <h2>Active Games</h2>
+
+        {gamesPending ? (
+          <p>Loading games...</p>
+        ) : (
+          games.map((g) => (
+            <div key={g.id}>
+              <a href={`/game/${g.id}`}>
+                {g.players[0].name} & {g.players[2].name} vs {g.players[1].name}{" "}
+                & {g.players[3].name}
+              </a>
+            </div>
+          ))
+        )}
       </div>
-
-      {/* <div className="container"> */}
-      {/* <NewGame players={playerList} /> */}
-
       {/* {{ #if activeGameIds.length }}
       <h2>Active Games</h2>
       <ul>

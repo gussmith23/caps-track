@@ -1,7 +1,7 @@
 "use server";
 
 import { AppDataSource } from "@/lib/db";
-import { GameEntity } from "@/lib/entity/game";
+import { GameEntity, GameObject } from "@/lib/entity/game";
 import { PlayerEntity } from "@/lib/entity/player";
 import { PointEntity } from "@/lib/entity/point";
 import { broadcastGameUpdate } from "./game/[id]/gameUpdated/route";
@@ -38,14 +38,21 @@ export async function addPointToGame(gameId: string, playerId: string) {
   const player = await playerRepository.findOneByOrFail({ id: playerIdNumber });
 
   // Add point
-  await AppDataSource.manager.insert(PointEntity, {
+  let point = AppDataSource.manager.create(PointEntity, {
     game: game,
     player: player,
     datetime: new Date(),
   });
+  point = await AppDataSource.manager.save(point);
+
+  // reload game with new point.
+  const updatedGame = await gameRepository.findOneOrFail({
+    where: { id: gameId },
+    relations: { players: true, points: true },
+  });
 
   // Notify clients of game update.
-  await broadcastGameUpdate(game);
+  await broadcastGameUpdate(updatedGame);
 }
 
 // export async function getPointsForGame(gameId: string) {
@@ -66,3 +73,11 @@ export async function addPointToGame(gameId: string, playerId: string) {
 //   //   .groupBy("point.playerId").getRawMany();
 //   // console.log("getPointsForGame out: ", out);
 // }
+
+export async function getGames(): Promise<string> {
+  return await AppDataSource.manager
+    .find(GameEntity, {
+      relations: ["players", "points"],
+    })
+    .then((games) => JSON.stringify(games));
+}

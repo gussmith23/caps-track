@@ -49,8 +49,6 @@ class SwipeStateMachine {
       }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
-
-    console.log(this.rawMoveEvents);
   }
 
   // Draw the line on the canvas based on the pointer events.
@@ -198,7 +196,6 @@ class SwipeStateMachine {
       if (this.state == "swiping") {
         // If we are swiping, add player to playersSwiped.
         this.playersSwiped.push(player);
-        console.log("Added player to playersSwiped", this.playersSwiped);
 
         // If we are swiping, vibrate the device.
         if (navigator.vibrate) {
@@ -252,7 +249,7 @@ export default function Game({ id }: { id: string }) {
 
   // const [dataIgnored, setData] = useState(null);
 
-  const debug = true; // Set to true to show canvas border, among other things.
+  const debug = false; // Set to true to show canvas border, among other things.
 
   const [game, setGame]: [
     GameObject | null,
@@ -262,15 +259,33 @@ export default function Game({ id }: { id: string }) {
   useEffect(() => {
     const eventSource = new EventSource(`/game/${id}/gameUpdated`);
     eventSource.onmessage = ({ data }) => {
-      setGame(JSON.parse(data));
+      updateGame(JSON.parse(data));
     };
     return () => {
       eventSource.close();
     };
   }, [id]);
 
+  const [team1Score, setTeam1Score] = useState(0);
+  const [team2Score, setTeam2Score] = useState(0);
+  const [player1Score, setPlayer1Score] = useState(0);
+  const [player2Score, setPlayer2Score] = useState(0);
+  const [player3Score, setPlayer3Score] = useState(0);
+  const [player4Score, setPlayer4Score] = useState(0);
+
+  function updateGame(game: GameObject) {
+    setGame(game);
+    const [[team1, team2], [p1, p2, p3, p4]] = getScore(game);
+    setTeam1Score(team1);
+    setTeam2Score(team2);
+    setPlayer1Score(p1);
+    setPlayer2Score(p2);
+    setPlayer3Score(p3);
+    setPlayer4Score(p4);
+  }
+
   const fetchGame = async () => {
-    setGame(JSON.parse(await getGame(id)));
+    updateGame(JSON.parse(await getGame(id)));
   };
 
   // Get game.
@@ -319,7 +334,13 @@ export default function Game({ id }: { id: string }) {
   //   ctx.closePath();
   // }
 
-  function playerBox({ player }: { player: PlayerObject }) {
+  function playerBox({
+    player,
+    score,
+  }: {
+    player: PlayerObject;
+    score: number;
+  }) {
     if (stateMachine == null) {
       return <p>Loading...</p>;
     }
@@ -332,33 +353,14 @@ export default function Game({ id }: { id: string }) {
         // onPointerUp={stateMachine.makeOnPointerUp(player)}
         className="btn btn-primary btn-sm"
       >
-        +
+        {player.name} : {score}
       </button>
     );
     let html = (
-      <>
-        {player ? (
-          <div className="component">
-            {player.name}
-            {button}
-          </div>
-        ) : (
-          "loading..."
-        )}
-      </>
+      <>{player ? <div className="component">{button}</div> : "loading..."}</>
     );
     return html;
   }
-
-  const [
-    [team1Score, team2Score],
-    [player1Score, player2Score, player3Score, player4Score],
-  ] = game
-    ? getScore(game)
-    : [
-        [0, 0],
-        [0, 0, 0, 0],
-      ];
 
   if (game == null || game.players == null) {
     return <p>Loading...</p>;
@@ -367,43 +369,57 @@ export default function Game({ id }: { id: string }) {
   return (
     <>
       {game && (
-        <div
-          // have to put this on the div and not the canvas, as we disabled
-          // pointer events on the canvas
-          className="container"
-          style={{
-            position: "relative",
-            touchAction: "none",
-          }}
-        >
-          <canvas
-            id="gameCanvas"
-            style={{
-              touchAction: "none",
-              pointerEvents: "none",
-              border: debug ? "1px solid black" : "none",
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-            }}
-          ></canvas>
-          <GameGrid
-            player1Component={playerBox({ player: game.players[0] })}
-            player2Component={playerBox({ player: game.players[1] })}
-            player3Component={playerBox({ player: game.players[2] })}
-            player4Component={playerBox({ player: game.players[3] })}
-          />
-        </div>
-      )}
-      {game && (
         <>
-          <p>
-            Score: {team1Score} - {team2Score}
-          </p>
-          <p>Player 1 Score: {player1Score}</p>
-          <p>Player 2 Score: {player2Score}</p>
-          <p>Player 3 Score: {player3Score}</p>
-          <p>Player 4 Score: {player4Score}</p>
+          <div
+            // have to put this on the div and not the canvas, as we disabled
+            // pointer events on the canvas
+            className="container"
+            style={{
+              position: "relative",
+              touchAction: "none",
+            }}
+          >
+            <canvas
+              id="gameCanvas"
+              style={{
+                touchAction: "none",
+                pointerEvents: "none",
+                border: debug ? "1px solid black" : "none",
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+              }}
+            ></canvas>
+            <GameGrid
+              player1Component={playerBox({
+                player: game.players[0],
+                score: player1Score,
+              })}
+              player2Component={playerBox({
+                player: game.players[1],
+                score: player2Score,
+              })}
+              player3Component={playerBox({
+                player: game.players[2],
+                score: player3Score,
+              })}
+              player4Component={playerBox({
+                player: game.players[3],
+                score: player4Score,
+              })}
+            />
+          </div>
+          <div className="text-center">
+            {/* add vertical blank space */}
+            <div style={{ height: "20px" }}></div>
+            <h2>
+              {game.players[0].name} & {game.players[2].name} vs{" "}
+              {game.players[1].name} & {game.players[3].name}
+            </h2>
+            <h2>
+              Score: {team1Score} - {team2Score}
+            </h2>
+          </div>
         </>
       )}
     </>

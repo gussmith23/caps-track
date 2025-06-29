@@ -27,18 +27,19 @@ export class PlayerEntity {
 
   @Column()
   name: string;
-  @Column()
+  @Column({ nullable: true })
   nameColor?: string;
 
   @ManyToOne(() => FontEntity, {
     eager: true,
     cascade: true,
     onDelete: "SET NULL",
+    nullable: true,
   })
   @JoinColumn()
   font?: FontEntity;
 
-  @Column()
+  @Column({ nullable: true })
   fontWeight?: string;
 
   @ManyToMany(() => Item, { eager: true, cascade: true, onDelete: "SET NULL" })
