@@ -6,7 +6,7 @@ export interface PointObject {
   id: number;
   game: GameObject;
   player: PlayerObject;
-  datetime: Date;
+  index: number;
 }
 
 @Entity({ name: "point" })
@@ -22,17 +22,18 @@ export class PointEntity {
   })
   public player: PlayerEntity; // Placeholder for Player entity, should be replaced with actual type
 
-  @Column({ type: "timestamp with time zone" })
-  public datetime: Date;
+  @Column({ type: "integer" })
+  public index: number;
+
   constructor(
     id: number,
     game: GameEntity,
     player: PlayerEntity,
-    datetime: Date,
+    index: number,
   ) {
     this.id = id;
     this.game = game;
     this.player = player;
-    this.datetime = datetime;
+    this.index = index;
   }
 }

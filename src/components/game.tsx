@@ -12,8 +12,9 @@ import {
 } from "react";
 import { GameGrid } from "./gameGrid";
 import { PlayerObject } from "@/lib/entity/player";
-import { addPointToGame, getGame } from "@/app/actions";
+import { addPointToGame, getGame, removePointFromGame } from "@/app/actions";
 import { GameObject } from "@/lib/entity/game";
+import { PointObject } from "@/lib/entity/point";
 
 class SwipeStateMachine {
   private state: "idle" | "maybe-swiping" | "swiping" = "idle";
@@ -366,6 +367,9 @@ export default function Game({ id }: { id: string }) {
     return <p>Loading...</p>;
   }
 
+  const sortedPoints =
+    game.points && game.points.sort((a, b) => a.index - b.index);
+
   return (
     <>
       {game && (
@@ -411,7 +415,7 @@ export default function Game({ id }: { id: string }) {
           </div>
           <div className="text-center">
             {/* add vertical blank space */}
-            <div style={{ height: "20px" }}></div>
+            <div style={{ height: "4em" }}></div>
             <h2>
               {game.players[0].name} & {game.players[2].name} vs{" "}
               {game.players[1].name} & {game.players[3].name}
@@ -420,6 +424,31 @@ export default function Game({ id }: { id: string }) {
               Score: {team1Score} - {team2Score}
             </h2>
           </div>
+          {sortedPoints && (
+            <div className="container">
+              <div style={{ height: "4em" }}></div>
+              <h2>History</h2>
+
+              <ol>
+                {sortedPoints.map((point: PointObject) => {
+                  return (
+                    <li key={point.index}>
+                      {point.player.name}
+                      <button
+                        className="btn-primary"
+                        onClick={async () =>
+                          removePointFromGame(game.id, point.id)
+                        }
+                      >
+                        {" "}
+                        remove
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          )}
         </>
       )}
     </>
